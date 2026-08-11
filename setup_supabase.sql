@@ -34,6 +34,9 @@ CREATE TABLE IF NOT EXISTS public.questions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     questiontext TEXT NOT NULL,
+    answer TEXT,
+    image_url TEXT,
+    is_public BOOLEAN DEFAULT false,
     exam TEXT NOT NULL DEFAULT 'Unknown',
     subject TEXT NOT NULL DEFAULT 'Unknown',
     chapter TEXT NOT NULL DEFAULT 'Unknown',
@@ -64,6 +67,26 @@ CREATE POLICY "Users can update their own questions" ON public.questions
 DROP POLICY IF EXISTS "Users can delete their own questions" ON public.questions;
 CREATE POLICY "Users can delete their own questions" ON public.questions
     FOR DELETE USING (auth.uid() = user_id);
+
+-- Allow anyone to view public questions
+DROP POLICY IF EXISTS "Anyone can view public questions" ON public.questions;
+CREATE POLICY "Anyone can view public questions" ON public.questions
+    FOR SELECT USING (is_public = true);
+
+-- 3. Storage Bucket for Question Images
+-- Note: You might need to run this as a superuser or create the bucket from the Supabase UI
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('question_images', 'question_images', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Storage Policies for 'question_images' bucket
+DROP POLICY IF EXISTS "Images are publicly accessible" ON storage.objects;
+CREATE POLICY "Images are publicly accessible" ON storage.objects
+    FOR SELECT USING (bucket_id = 'question_images');
+
+DROP POLICY IF EXISTS "Authenticated users can upload images" ON storage.objects;
+CREATE POLICY "Authenticated users can upload images" ON storage.objects
+    FOR INSERT WITH CHECK (bucket_id = 'question_images' AND auth.role() = 'authenticated');
 
 -- Note: If the questions table already exists, just run these ALTER TABLE commands:
 -- ALTER TABLE public.questions ADD COLUMN exam TEXT DEFAULT 'Unknown';

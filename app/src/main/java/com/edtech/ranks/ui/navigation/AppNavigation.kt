@@ -13,6 +13,7 @@ import com.edtech.ranks.ui.home.HomeScreen
 import com.edtech.ranks.ui.practice.PracticeScreen
 import com.edtech.ranks.ui.profile.ProfileSetupScreen
 import com.edtech.ranks.ui.vault.VaultScreen
+import com.edtech.ranks.ui.central.CentralScreen
 
 sealed class Screen(val route: String) {
     object Auth : Screen("auth")
@@ -21,6 +22,7 @@ sealed class Screen(val route: String) {
     object Camera : Screen("camera")
     object Practice : Screen("practice")
     object Vault : Screen("vault")
+    object Central : Screen("central")
 }
 
 @Composable
@@ -61,7 +63,8 @@ fun AppNavigation(
                 HomeScreen(
                     onAddQuestionClick = { navController.navigate(Screen.Camera.route) },
                     onCustomTestClick = { navController.navigate(Screen.Practice.route) },
-                    onVaultClick = { navController.navigate(Screen.Vault.route) }
+                    onVaultClick = { navController.navigate(Screen.Vault.route) },
+                    onCentralClick = { navController.navigate(Screen.Central.route) }
                 )
             }
             composable(Screen.Camera.route) {
@@ -76,6 +79,11 @@ fun AppNavigation(
             }
             composable(Screen.Vault.route) {
                 VaultScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.Central.route) {
+                CentralScreen(
                     onNavigateBack = { navController.popBackStack() }
                 )
             }

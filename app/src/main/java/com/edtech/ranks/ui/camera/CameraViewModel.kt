@@ -15,7 +15,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.gotrue.auth
 import com.edtech.ranks.data.remote.supabase
 
 class CameraViewModel : ViewModel() {
@@ -61,7 +63,15 @@ class CameraViewModel : ViewModel() {
         _extractedText.value = ""
     }
 
-    fun saveQuestion(finalText: String, exam: String, subject: String, chapter: String, topic: String) {
+    fun saveQuestion(
+        finalText: String, 
+        exam: String, 
+        subject: String, 
+        chapter: String, 
+        topic: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         viewModelScope.launch {
             try {
                 val user = supabase.auth.currentUserOrNull()
@@ -80,9 +90,10 @@ class CameraViewModel : ViewModel() {
                 
                 _isVerifying.value = false
                 _extractedText.value = ""
+                onSuccess()
             } catch (e: Exception) {
                 e.printStackTrace()
-                // Handle error (e.g., show a toast)
+                onError(e.message ?: "Unknown error")
             }
         }
     }
@@ -91,6 +102,7 @@ class CameraViewModel : ViewModel() {
 @Serializable
 data class SupabaseQuestionInsert(
     val user_id: String,
+    @SerialName("questiontext")
     val questionText: String,
     val exam: String,
     val subject: String,

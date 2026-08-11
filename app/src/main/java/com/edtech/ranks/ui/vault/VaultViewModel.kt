@@ -11,9 +11,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
+import kotlinx.serialization.SerialName
+
 @Serializable
 data class VaultQuestion(
     val id: String,
+    @SerialName("questiontext")
     val questionText: String,
     val exam: String,
     val subject: String,

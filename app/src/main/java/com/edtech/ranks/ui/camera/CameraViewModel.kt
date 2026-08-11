@@ -16,6 +16,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.File
+import androidx.camera.core.ImageCaptureException
+import android.net.Uri
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.gotrue.auth
 import com.edtech.ranks.data.remote.supabase
@@ -30,32 +37,56 @@ class CameraViewModel : ViewModel() {
     private val _isVerifying = MutableStateFlow(false)
     val isVerifying: StateFlow<Boolean> = _isVerifying.asStateFlow()
 
-    fun captureAndAnalyze(cameraController: LifecycleCameraController, context: Context) {
+    private val _capturedImages = MutableStateFlow<List<CapturedImage>>(emptyList())
+    val capturedImages: StateFlow<List<CapturedImage>> = _capturedImages.asStateFlow()
+
+    fun captureImage(cameraController: LifecycleCameraController, context: Context) {
+        val outputDirectory = context.getExternalFilesDir(null)
+        val photoFile = File(outputDirectory, "${System.currentTimeMillis()}.jpg")
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
         cameraController.takePicture(
+            outputOptions,
             ContextCompat.getMainExecutor(context),
-            object : ImageCapture.OnImageCapturedCallback() {
-                override fun onCaptureSuccess(imageProxy: ImageProxy) {
-                    val mediaImage = imageProxy.image
-                    if (mediaImage != null) {
-                        val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-                        
-                        recognizer.process(image)
-                            .addOnSuccessListener { visionText ->
-                                _extractedText.value = visionText.text
-                                _isVerifying.value = true
-                            }
-                            .addOnFailureListener { e ->
-                                e.printStackTrace()
-                            }
-                            .addOnCompleteListener { 
-                                imageProxy.close() 
-                            }
-                    } else {
-                        imageProxy.close()
-                    }
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
+                    val newImage = CapturedImage(savedUri.toString(), System.currentTimeMillis())
+                    _capturedImages.value = _capturedImages.value + newImage
+                }
+                override fun onError(exc: ImageCaptureException) {
+                    exc.printStackTrace()
                 }
             }
         )
+    }
+
+    fun processBatch(context: Context) {
+        val currentImages = _capturedImages.value
+        if (currentImages.isEmpty()) return
+
+        // Save metadata to JSON
+        val jsonFile = File(context.getExternalFilesDir(null), "batch_${System.currentTimeMillis()}.json")
+        val jsonString = Json.encodeToString(currentImages)
+        jsonFile.writeText(jsonString)
+
+        // For this prototype, we'll process the first image to extract text for the Verification Modal
+        // In a full LLM integration, we would send all images/text to the LLM.
+        val firstImageUri = Uri.parse(currentImages.first().uri)
+        val image = InputImage.fromFilePath(context, firstImageUri)
+        
+        recognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                _extractedText.value = visionText.text
+                _isVerifying.value = true
+            }
+            .addOnFailureListener { e ->
+                e.printStackTrace()
+            }
+    }
+
+    fun clearBatch() {
+        _capturedImages.value = emptyList()
     }
 
     fun dismissVerification() {
@@ -65,6 +96,8 @@ class CameraViewModel : ViewModel() {
 
     fun saveQuestion(
         finalText: String, 
+        answerText: String,
+        isPublic: Boolean,
         exam: String, 
         subject: String, 
         chapter: String, 
@@ -78,6 +111,8 @@ class CameraViewModel : ViewModel() {
                 val newQuestion = SupabaseQuestionInsert(
                     user_id = user?.id ?: "",
                     questionText = finalText,
+                    answer = answerText,
+                    is_public = isPublic,
                     exam = exam,
                     subject = subject,
                     chapter = chapter,
@@ -104,9 +139,18 @@ data class SupabaseQuestionInsert(
     val user_id: String,
     @SerialName("questiontext")
     val questionText: String,
+    val answer: String? = null,
+    val image_url: String? = null,
+    val is_public: Boolean = false,
     val exam: String,
     val subject: String,
     val chapter: String,
     val topic: String,
     val difficulty: Int
+)
+
+@Serializable
+data class CapturedImage(
+    val uri: String,
+    val timestamp: Long
 )

@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,6 +29,7 @@ fun HomeScreen(
     onAddQuestionClick: () -> Unit,
     onCustomTestClick: () -> Unit,
     onVaultClick: () -> Unit,
+    onCentralClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -111,6 +113,17 @@ fun HomeScreen(
             backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
             contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             onClick = onVaultClick
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        DashboardActionCard(
+            title = "Central Database",
+            description = "Search and discover public questions",
+            icon = Icons.Default.Search,
+            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            onClick = onCentralClick
         )
     }
 }

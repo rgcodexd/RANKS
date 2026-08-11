@@ -18,6 +18,9 @@ data class VaultQuestion(
     val id: String,
     @SerialName("questiontext")
     val questionText: String,
+    val answer: String? = null,
+    val image_url: String? = null,
+    val is_public: Boolean = false,
     val exam: String,
     val subject: String,
     val chapter: String,

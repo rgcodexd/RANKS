@@ -12,6 +12,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -49,6 +51,7 @@ fun CameraScreen(
 
     val extractedText by viewModel.extractedText.collectAsState()
     val isVerifying by viewModel.isVerifying.collectAsState()
+    val capturedImages by viewModel.capturedImages.collectAsState()
 
     if (hasPermission) {
         Box(modifier = modifier.fillMaxSize()) {
@@ -66,17 +69,37 @@ fun CameraScreen(
                 }
             )
 
-            // Capture Button
-            Button(
-                onClick = { viewModel.captureAndAnalyze(cameraController, context) },
+            // Capture Button and Batch Preview
+            Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 48.dp)
-                    .size(80.dp),
-                shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+                    .padding(bottom = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Icon or simple text
+                if (capturedImages.isNotEmpty()) {
+                    Text(
+                        "${capturedImages.size} captured", 
+                        color = Color.White, 
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Button(
+                        onClick = { viewModel.processBatch(context) },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    ) {
+                        Text("Process Batch")
+                    }
+                }
+                
+                Button(
+                    onClick = { viewModel.captureImage(cameraController, context) },
+                    modifier = Modifier.size(80.dp),
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+                ) {
+                    // Icon or simple text
+                }
             }
         }
     } else {
@@ -91,10 +114,13 @@ fun CameraScreen(
     if (isVerifying) {
         VerificationModal(
             initialText = extractedText,
-            onDismiss = { viewModel.dismissVerification() },
-            onSave = { finalText, exam, subject, chapter, topic -> 
+            onDismiss = { 
+                viewModel.dismissVerification() 
+                viewModel.clearBatch()
+            },
+            onSave = { finalText, answerText, isPublic, exam, subject, chapter, topic -> 
                 viewModel.saveQuestion(
-                    finalText, exam, subject, chapter, topic,
+                    finalText, answerText, isPublic, exam, subject, chapter, topic,
                     onSuccess = {
                         android.widget.Toast.makeText(context, "Question added successfully!", android.widget.Toast.LENGTH_SHORT).show()
                         onNavigateBack()
@@ -110,7 +136,10 @@ fun CameraScreen(
     // Back Button overlay
     Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         IconButton(
-            onClick = onNavigateBack,
+            onClick = {
+                viewModel.clearBatch()
+                onNavigateBack()
+            },
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .background(Color.Black.copy(alpha = 0.5f), CircleShape)
@@ -124,9 +153,11 @@ fun CameraScreen(
 fun VerificationModal(
     initialText: String,
     onDismiss: () -> Unit,
-    onSave: (String, String, String, String, String) -> Unit
+    onSave: (String, String, Boolean, String, String, String, String) -> Unit
 ) {
-    var text by remember { mutableStateOf(initialText) }
+    var questionText by remember { mutableStateOf(initialText) }
+    var answerText by remember { mutableStateOf("") }
+    var isPublic by remember { mutableStateOf(false) }
     var exam by remember { mutableStateOf("") }
     var subject by remember { mutableStateOf("") }
     var chapter by remember { mutableStateOf("") }
@@ -140,11 +171,23 @@ fun VerificationModal(
         text = {
             Column(modifier = Modifier.verticalScroll(androidx.compose.foundation.rememberScrollState())) {
                 OutlinedTextField(
-                    value = text,
-                    onValueChange = { text = it },
+                    value = questionText,
+                    onValueChange = { questionText = it },
                     label = { Text("Extracted Question") },
-                    modifier = Modifier.fillMaxWidth().height(150.dp)
+                    modifier = Modifier.fillMaxWidth().height(120.dp)
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = answerText,
+                    onValueChange = { answerText = it },
+                    label = { Text("Answer (Optional)") },
+                    modifier = Modifier.fillMaxWidth().height(100.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = isPublic, onCheckedChange = { isPublic = it })
+                    Text("Share in Central Database")
+                }
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = exam,
@@ -181,10 +224,10 @@ fun VerificationModal(
         },
         confirmButton = {
             Button(
-                onClick = { onSave(text, exam, subject, chapter, topic) },
+                onClick = { onSave(questionText, answerText, isPublic, exam, subject, chapter, topic) },
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
             ) {
-                Text("Save to Vault")
+                Text(if (isPublic) "Save & Publish" else "Save to Vault")
             }
         },
         dismissButton = {

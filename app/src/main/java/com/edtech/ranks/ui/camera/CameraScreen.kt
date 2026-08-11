@@ -93,8 +93,16 @@ fun CameraScreen(
             initialText = extractedText,
             onDismiss = { viewModel.dismissVerification() },
             onSave = { finalText, exam, subject, chapter, topic -> 
-                viewModel.saveQuestion(finalText, exam, subject, chapter, topic)
-                onNavigateBack()
+                viewModel.saveQuestion(
+                    finalText, exam, subject, chapter, topic,
+                    onSuccess = {
+                        android.widget.Toast.makeText(context, "Question added successfully!", android.widget.Toast.LENGTH_SHORT).show()
+                        onNavigateBack()
+                    },
+                    onError = { errorMsg ->
+                        android.widget.Toast.makeText(context, "Error: $errorMsg", android.widget.Toast.LENGTH_LONG).show()
+                    }
+                )
             }
         )
     }

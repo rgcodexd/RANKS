@@ -1,28 +1,34 @@
 package com.edtech.ranks.ui.home
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.edtech.ranks.ui.theme.PrimaryBlue
-import com.edtech.ranks.ui.theme.PrimaryBlueVariant
+import com.edtech.ranks.ui.components.GlassCard
+import com.edtech.ranks.ui.components.glowEffect
+import com.edtech.ranks.ui.theme.*
 
 @Composable
 fun HomeScreen(
@@ -30,186 +36,229 @@ fun HomeScreen(
     onCustomTestClick: () -> Unit,
     onVaultClick: () -> Unit,
     onCentralClick: () -> Unit,
+    onLeaderboardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp)
+            .background(background)
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp, vertical = 24.dp)
     ) {
-        // Header
+        // Stellar HUD
         Text(
-            text = "Welcome to RANKS",
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontWeight = FontWeight.ExtraBold,
-                color = PrimaryBlue
+            text = "Welcome back, Commander",
+            style = MaterialTheme.typography.headlineLarge,
+            color = onSurface
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            HudBadge(
+                icon = "🔥", // Using emoji as placeholder for local_fire_department
+                text = "Streak: 15 Days",
+                iconColor = tertiary
             )
-        )
-        Text(
-            text = "Your AI Exam Prep Dashboard",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-        )
+            HudBadge(
+                icon = "🏅", // Using emoji for military_tech
+                text = "Rank #42",
+                iconColor = primary
+            )
+        }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // Stats Section (Mocked for now)
+        // Bento Grid Layout
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            StatCard(
-                title = "Vault",
-                value = "12",
-                subtitle = "Questions",
-                modifier = Modifier.weight(1f)
-            )
-            StatCard(
-                title = "Accuracy",
-                value = "85%",
-                subtitle = "Last 7 Days",
-                modifier = Modifier.weight(1f)
-            )
+            // Daily Mission Ring
+            GlassCard(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(220.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp).fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Daily Mission",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = onSurface,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    DailyMissionRing(progress = 0.75f, current = 15, total = 20)
+                }
+            }
+
+            // Continue Practice
+            GlassCard(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(220.dp)
+                    .glowEffect(color = primary.copy(alpha = 0.1f), radius = 20.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp).fillMaxSize(),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(text = "Next Protocol", style = MaterialTheme.typography.headlineMedium, color = onSurface)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = "Quantum Mechanics", style = MaterialTheme.typography.bodyMedium, color = onSurfaceVariant)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(primary.copy(alpha = 0.1f), CircleShape)
+                                .border(1.dp, primary.copy(alpha = 0.2f), CircleShape)
+                                .padding(horizontal = 12.dp, vertical = 4.dp)
+                        ) {
+                            Text("Physics", style = MaterialTheme.typography.labelSmall, color = primary)
+                        }
+                    }
+                    Button(
+                        onClick = onCustomTestClick,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Brush.horizontalGradient(listOf(primaryContainer, primary)), RoundedCornerShape(8.dp))
+                                .padding(vertical = 12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("Initiate Sequence", style = MaterialTheme.typography.labelMedium, color = onPrimaryContainer)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(Icons.Default.ArrowForward, contentDescription = null, tint = onPrimaryContainer, modifier = Modifier.size(18.dp))
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Text(
-            text = "Quick Actions",
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
+        // Recent Captures Horizontal Scroll
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Text(text = "Recent Captures", style = MaterialTheme.typography.headlineMedium, color = onSurface)
+            Text(
+                text = "View Vault",
+                style = MaterialTheme.typography.labelSmall,
+                color = primary,
+                modifier = Modifier.clickable { onVaultClick() }
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
+        
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            RecentCaptureCard(title = "Calculus Definite Integrals", time = "2 hours ago", status = "done")
+            RecentCaptureCard(title = "Organic Synthesis", time = "Yesterday", status = "pending")
+        }
 
-        // Action Buttons
-        DashboardActionCard(
-            title = "Add Question to Vault",
-            description = "Snap a photo to extract and save a question",
-            icon = Icons.Default.AddCircle,
-            backgroundColor = PrimaryBlue,
-            contentColor = Color.White,
-            onClick = onAddQuestionClick
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DashboardActionCard(
-            title = "Take Custom Test",
-            description = "Review your saved questions with Spaced Repetition",
-            icon = Icons.Default.Edit,
-            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            onClick = onCustomTestClick
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DashboardActionCard(
-            title = "Question Vault",
-            description = "Browse your saved questions perfectly organized",
-            icon = Icons.Default.Star,
-            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            onClick = onVaultClick
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DashboardActionCard(
-            title = "Central Database",
-            description = "Search and discover public questions",
-            icon = Icons.Default.Search,
-            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            onClick = onCentralClick
-        )
+        Spacer(modifier = Modifier.height(100.dp)) // FAB spacer
     }
 }
 
 @Composable
-fun StatCard(
-    title: String,
-    value: String,
-    subtitle: String,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+fun HudBadge(icon: String, text: String, iconColor: Color) {
+    Row(
+        modifier = Modifier
+            .background(surfaceVariant, CircleShape)
+            .border(1.dp, Color.White.copy(alpha = 0.1f), CircleShape)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                color = PrimaryBlue
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-            )
+        Text(text = icon, fontSize = 16.sp) // Fallback for Material Symbols
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = text, style = MaterialTheme.typography.labelMedium, color = onSurface)
+    }
+}
+
+@Composable
+fun DailyMissionRing(progress: Float, current: Int, total: Int) {
+    var animationPlayed by remember { mutableStateOf(false) }
+    val currentProgress by animateFloatAsState(
+        targetValue = if (animationPlayed) progress else 0f,
+        animationSpec = tween(durationMillis = 1000, delayMillis = 300)
+    )
+
+    LaunchedEffect(key1 = true) {
+        animationPlayed = true
+    }
+
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(100.dp)) {
+        CircularProgressIndicator(
+            progress = { 1f },
+            modifier = Modifier.fillMaxSize(),
+            color = surfaceVariant,
+            strokeWidth = 8.dp,
+        )
+        CircularProgressIndicator(
+            progress = { currentProgress },
+            modifier = Modifier.fillMaxSize(),
+            color = tertiary,
+            strokeWidth = 8.dp,
+            strokeCap = StrokeCap.Round
+        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = current.toString(), style = MaterialTheme.typography.displayMedium, color = onSurface)
+            Text(text = "/$total Solved", style = MaterialTheme.typography.labelSmall, color = onSurfaceVariant)
         }
     }
 }
 
 @Composable
-fun DashboardActionCard(
-    title: String,
-    description: String,
-    icon: ImageVector,
-    backgroundColor: Color,
-    contentColor: Color,
-    onClick: () -> Unit
-) {
-    Card(
+fun RecentCaptureCard(title: String, time: String, status: String) {
+    GlassCard(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .width(200.dp)
+            .clickable { }
     ) {
-        Row(
-            modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = contentColor,
-                modifier = Modifier.size(40.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = contentColor
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = contentColor.copy(alpha = 0.8f)
-                )
+        Column(modifier = Modifier.padding(16.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(surfaceVariant)
+            ) {
+                // Image placeholder
+                Box(modifier = Modifier.fillMaxSize().background(primary.copy(alpha = 0.1f)))
+                
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(8.dp)
+                        .background(GlassBackground, RoundedCornerShape(4.dp))
+                        .padding(4.dp)
+                ) {
+                    if (status == "done") {
+                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = tertiary, modifier = Modifier.size(16.dp))
+                    } else {
+                        Icon(Icons.Default.Warning, contentDescription = null, tint = onSurfaceVariant, modifier = Modifier.size(16.dp))
+                    }
+                }
             }
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(text = title, style = MaterialTheme.typography.labelMedium, color = onSurface, maxLines = 1)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = time, style = MaterialTheme.typography.labelSmall, color = onSurfaceVariant)
         }
     }
 }

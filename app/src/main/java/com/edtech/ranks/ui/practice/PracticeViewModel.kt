@@ -11,6 +11,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import com.edtech.ranks.data.remote.supabase
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.postgrest
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class SolvedEventInsert(
+    val user_id: String,
+    val exam: String
+)
 
 class PracticeViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -42,9 +52,21 @@ class PracticeViewModel(application: Application) : AndroidViewModel(application
         if (index < questions.size) {
             val currentQuestion = questions[index]
             val updatedQuestion = SpacedRepetitionHelper.calculateNextReview(currentQuestion, quality)
-            
             viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
                 questionDao.updateQuestion(updatedQuestion)
+
+                // If quality indicates it was solved/reviewed successfully
+                if (quality > 0) {
+                    try {
+                        val user = supabase.auth.currentUserOrNull()
+                        if (user != null) {
+                            val event = SolvedEventInsert(user.id, currentQuestion.exam)
+                            supabase.postgrest["solved_events"].insert(event)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             }
 
             if (index < questions.size - 1) {

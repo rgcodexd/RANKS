@@ -45,6 +45,11 @@ CREATE TABLE IF NOT EXISTS public.questions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- Ensure new columns are added if the table already existed
+ALTER TABLE public.questions ADD COLUMN IF NOT EXISTS answer TEXT;
+ALTER TABLE public.questions ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE public.questions ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT false;
+
 -- Set up Row Level Security (RLS) for the questions table
 ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY;
 
@@ -88,7 +93,44 @@ DROP POLICY IF EXISTS "Authenticated users can upload images" ON storage.objects
 CREATE POLICY "Authenticated users can upload images" ON storage.objects
     FOR INSERT WITH CHECK (bucket_id = 'question_images' AND auth.role() = 'authenticated');
 
--- Note: If the questions table already exists, just run these ALTER TABLE commands:
--- ALTER TABLE public.questions ADD COLUMN exam TEXT DEFAULT 'Unknown';
--- ALTER TABLE public.questions ADD COLUMN chapter TEXT DEFAULT 'Unknown';
--- ALTER TABLE public.questions ADD COLUMN created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now());
+-- 4. Solved Events Table (Tracking for Top Scholars Leaderboard)
+CREATE TABLE IF NOT EXISTS public.solved_events (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    exam TEXT NOT NULL DEFAULT 'Unknown',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Set up Row Level Security (RLS) for solved_events
+ALTER TABLE public.solved_events ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can insert their own solved events" ON public.solved_events;
+CREATE POLICY "Users can insert their own solved events" ON public.solved_events
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Anyone can view solved events" ON public.solved_events;
+CREATE POLICY "Anyone can view solved events" ON public.solved_events
+    FOR SELECT USING (true);
+
+-- 5. Leaderboard Views
+-- View for Questions Added (Top Contributors)
+CREATE OR REPLACE VIEW public.leaderboard_added AS
+SELECT
+    p.id AS user_id,
+    p.full_name,
+    q.exam,
+    COUNT(q.id) AS count
+FROM public.profiles p
+JOIN public.questions q ON p.id = q.user_id
+GROUP BY p.id, p.full_name, q.exam;
+
+-- View for Questions Solved (Top Scholars)
+CREATE OR REPLACE VIEW public.leaderboard_solved AS
+SELECT
+    p.id AS user_id,
+    p.full_name,
+    s.exam,
+    COUNT(s.id) AS count
+FROM public.profiles p
+JOIN public.solved_events s ON p.id = s.user_id
+GROUP BY p.id, p.full_name, s.exam;

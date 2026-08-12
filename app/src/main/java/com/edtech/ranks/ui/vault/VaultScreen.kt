@@ -12,7 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.edtech.ranks.ui.theme.PrimaryBlue
+import com.edtech.ranks.ui.components.GlassCard
+import com.edtech.ranks.ui.theme.*
 
 @Composable
 fun VaultScreen(
@@ -28,7 +29,7 @@ fun VaultScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(background)
             .padding(16.dp)
     ) {
         // Header
@@ -37,13 +38,14 @@ fun VaultScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onNavigateBack) {
-                Text("<", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = PrimaryBlue)
+                Text("<", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = primary)
             }
             Text(
                 text = "Question Vault",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.weight(1f),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                color = onSurface
             )
             Spacer(modifier = Modifier.width(48.dp))
         }
@@ -69,7 +71,7 @@ fun VaultScreen(
         when (vaultState) {
             is VaultState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = PrimaryBlue)
+                    CircularProgressIndicator(color = primary)
                 }
             }
             is VaultState.Error -> {
@@ -109,22 +111,20 @@ fun VaultScreen(
                             item {
                                 Text(
                                     text = category.ifBlank { "Uncategorized" },
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = PrimaryBlue,
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    color = tertiary,
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
                             }
                             items(qList) { question ->
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                                GlassCard(
+                                    modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Column(modifier = Modifier.padding(16.dp)) {
                                         Text(
                                             text = question.questionText,
-                                            style = MaterialTheme.typography.bodyLarge
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = onSurface
                                         )
                                         Spacer(modifier = Modifier.height(8.dp))
                                         Row(
@@ -134,12 +134,12 @@ fun VaultScreen(
                                             Text(
                                                 text = "${question.subject} • ${question.chapter}",
                                                 style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                                color = onSurfaceVariant
                                             )
                                             Text(
                                                 text = "Added: ${question.created_at.take(10)}",
                                                 style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                                color = onSurfaceVariant
                                             )
                                         }
                                     }

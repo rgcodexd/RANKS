@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Profile - Project Anti-Gravity</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#3e2400",
+                        "on-secondary-fixed-variant": "#005048",
+                        "on-secondary-container": "#003f38",
+                        "secondary-fixed": "#71f8e4",
+                        "tertiary-fixed": "#ffddb8",
+                        "inverse-on-surface": "#283044",
+                        "on-tertiary": "#472a00",
+                        "surface": "#0b1326",
+                        "surface-container-highest": "#2d3449",
+                        "on-secondary-fixed": "#00201c",
+                        "error-container": "#93000a",
+                        "surface-bright": "#31394d",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-primary-container": "#0d0096",
+                        "inverse-surface": "#dae2fd",
+                        "surface-tint": "#c0c1ff",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-secondary": "#003731",
+                        "on-surface": "#dae2fd",
+                        "on-primary-fixed": "#07006c",
+                        "surface-dim": "#0b1326",
+                        "on-background": "#dae2fd",
+                        "on-surface-variant": "#c7c4d7",
+                        "primary-container": "#8083ff",
+                        "surface-container": "#171f33",
+                        "on-primary": "#1000a9",
+                        "on-tertiary-fixed": "#2a1700",
+                        "error": "#ffb4ab",
+                        "outline": "#908fa0",
+                        "primary": "#c0c1ff",
+                        "primary-fixed": "#e1e0ff",
+                        "tertiary": "#ffb95f",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "inverse-primary": "#494bd6",
+                        "outline-variant": "#464554",
+                        "secondary-fixed-dim": "#4fdbc8",
+                        "background": "#0b1326",
+                        "secondary-container": "#04b4a2",
+                        "surface-variant": "#2d3449",
+                        "surface-container-low": "#131b2e",
+                        "on-error": "#690005",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#ca8100",
+                        "surface-container-lowest": "#060e20",
+                        "surface-container-high": "#222a3d",
+                        "secondary": "#4fdbc8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "margin-tablet": "40px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "display-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0b1326;
+            color: #dae2fd;
+        }
+        
+        .glass-card {
+            background-color: rgba(23, 31, 51, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .glow-active {
+            box-shadow: 0 0 12px rgba(192, 193, 255, 0.2);
+        }
+        
+        .rim-light {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .bg-grid-pattern {
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        /* Hide scrollbar for clean UI */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen relative pb-24 md:pb-0 overflow-x-hidden antialiased font-body-md text-body-md">
+<!-- Ambient Background Effect -->
+<div class="fixed inset-0 z-[-1] pointer-events-none">
+<div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] opacity-50 mix-blend-screen"></div>
+<div class="absolute bottom-[-100px] left-[-100px] w-[400px] h-[400px] bg-tertiary/10 rounded-full blur-[80px] opacity-40 mix-blend-screen"></div>
+<div class="absolute inset-0 bg-grid-pattern opacity-20 mask-image:linear-gradient(to_bottom,transparent,black,transparent)"></div>
+</div>
+<!-- Top Navigation (Desktop) -->
+<header class="hidden md:flex fixed top-0 w-full z-50 justify-between items-center px-margin-tablet py-sm bg-surface/80 backdrop-blur-md border-b border-white/20 shadow-[0_0_12px_rgba(192,193,255,0.2)]">
+<div class="flex items-center gap-sm cursor-pointer hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-primary text-[28px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+<span class="font-display-lg text-display-lg bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent tracking-tight">RANKS</span>
+</div>
+<nav class="flex gap-lg">
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors flex items-center gap-xs" href="#">
+<span class="material-symbols-outlined text-[20px]">home</span>
+                Home
+            </a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors flex items-center gap-xs" href="#">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+                Vault
+            </a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors flex items-center gap-xs" href="#">
+<span class="material-symbols-outlined text-[20px]">database</span>
+                Central DB
+            </a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors flex items-center gap-xs" href="#">
+<span class="material-symbols-outlined text-[20px]">leaderboard</span>
+                Leaderboard
+            </a>
+</nav>
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary glow-active">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A futuristic sci-fi styled avatar of a commander, wearing a high-tech sleek suit with glowing neon blue accents. Dark cosmic background, hyper-detailed, cyberpunk aesthetic, 8k resolution, cinematic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8a39RPvLtPzMsRaYVAr0iWJiHer4GLK7wn8oLNNu_WbWUQEbqVPV8i16xr4U77aLwBLJFFw6TuP_Hrd6hnGRiLpOzP57BbCmoeolWREBJ_95G4xnTOvrE_OY6egGMzPGm3QZZvps1BjxHaA-EnhXmRtInb7tp3-ipMCcIwBtLD7gQTI-mpMl_vkh73rpxOS-u0wyWMylzdSSy80z-9xSpMdk_qlGZLaqivuYzgOKACUL3ikVKdQPAng"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-tablet pt-lg md:pt-[100px] pb-xl flex flex-col gap-lg">
+<!-- Header Section: Profile -->
+<section class="glass-card rounded-2xl p-lg flex flex-col md:flex-row items-center md:items-start gap-lg relative overflow-hidden rim-light">
+<!-- Decorative abstract shape behind profile -->
+<div class="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-2xl"></div>
+<div class="relative">
+<div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-primary/50 p-1 shadow-[0_0_20px_rgba(192,193,255,0.15)] bg-surface">
+<img alt="Commander Avatar" class="w-full h-full object-cover rounded-full" data-alt="A futuristic sci-fi styled avatar of a commander, wearing a high-tech sleek suit with glowing neon blue accents. Dark cosmic background, hyper-detailed, cyberpunk aesthetic, 8k resolution, cinematic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCz5T_zHvnZf-NBioClCKefIKlyUfkbZOtqLeYQVuax9_egEA4Q3IyO6kOA1ZA7AW6Blrf164gXDpY7TuC_9h6Q_qrRsoOFlkejCS5ZCvFPBvfp_stGt2LS5CB6Jj42TYRxz6d7qAWVxVVpPDxFpR-gWC5RvH3Wo76RJD-Jl2D8iLI5fthLn6EO3CF4-OS6-ZIow6fXU6-Xf8OeK6H69We__8vN2tddY8RBsNvEevOAWPl0-pgcI-dcRA"/>
+</div>
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 bg-tertiary text-on-tertiary px-sm py-xs rounded-full font-label-sm text-label-sm font-bold flex items-center gap-1 shadow-lg shadow-tertiary/20">
+<span class="material-symbols-outlined text-[14px]">local_fire_department</span>
+                    PRO
+                </div>
+</div>
+<div class="flex-1 flex flex-col items-center md:items-start text-center md:text-left z-10">
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-xs">Commander</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-md">High-Performance Scholar Division</p>
+<div class="flex flex-wrap gap-sm justify-center md:justify-start">
+<span class="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 font-label-md text-label-md text-primary-fixed-dim">Physics Expert</span>
+<span class="px-3 py-1 rounded-full bg-secondary/10 border border-secondary/20 font-label-md text-label-md text-secondary-fixed-dim">Calculus Elite</span>
+<span class="px-3 py-1 rounded-full bg-surface-bright border border-outline-variant font-label-md text-label-md text-on-surface-variant">Joined 2084</span>
+</div>
+</div>
+<div class="flex flex-col gap-sm w-full md:w-auto mt-md md:mt-0 z-10">
+<button class="bg-gradient-to-r from-primary to-inverse-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-xs shadow-[0_0_15px_rgba(192,193,255,0.3)]">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+                    Edit Mission Profile
+                </button>
+<button class="bg-transparent border border-outline-variant text-on-surface-variant font-label-md text-label-md px-lg py-sm rounded-lg hover:bg-surface-variant/50 transition-colors flex items-center justify-center gap-xs backdrop-blur-sm">
+<span class="material-symbols-outlined text-[18px]">share</span>
+                    Share Stats
+                </button>
+</div>
+</section>
+<!-- Bento Grid Layout for Analytics -->
+<div class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-md">
+<!-- Global Rank (Large Card) -->
+<div class="md:col-span-2 md:row-span-1 glass-card rounded-xl p-lg flex items-center justify-between relative overflow-hidden group hover:border-primary/30 transition-colors">
+<div class="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-tertiary/10 to-transparent pointer-events-none"></div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant flex items-center gap-xs mb-sm">
+<span class="material-symbols-outlined text-[16px] text-tertiary">military_tech</span>
+                        Global Rank
+                    </h3>
+<div class="flex items-end gap-sm">
+<span class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-tertiary">#42</span>
+<span class="font-label-sm text-label-sm text-secondary mb-1 flex items-center">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+                            Top 0.5%
+                        </span>
+</div>
+</div>
+<div class="w-16 h-16 rounded-full bg-surface flex items-center justify-center border border-tertiary/30 shadow-[0_0_20px_rgba(255,185,95,0.2)]">
+<span class="material-symbols-outlined text-tertiary text-[32px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+</div>
+<!-- Accuracy Rate -->
+<div class="md:col-span-1 md:row-span-1 glass-card rounded-xl p-md flex flex-col justify-between group hover:border-secondary/30 transition-colors">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs mb-xs">
+<span class="material-symbols-outlined text-[14px] text-secondary">my_location</span>
+                    Accuracy Rate
+                </h3>
+<div class="flex items-center justify-between mt-auto">
+<span class="font-headline-lg text-headline-lg text-secondary">85%</span>
+<!-- Micro circular progress -->
+<div class="relative w-10 h-10">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="100, 100" stroke-width="3"></path>
+<path class="text-secondary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="85, 100" stroke-linecap="round" stroke-width="3" style="filter: drop-shadow(0 0 2px rgba(79, 219, 200, 0.5));"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Questions Solved -->
+<div class="md:col-span-1 md:row-span-1 glass-card rounded-xl p-md flex flex-col justify-between group hover:border-primary/30 transition-colors">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs mb-xs">
+<span class="material-symbols-outlined text-[14px] text-primary">task_alt</span>
+                    Questions Solved
+                </h3>
+<div>
+<span class="font-headline-lg text-headline-lg text-primary">1,204</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">+24 this week</p>
+</div>
+</div>
+<!-- Contribution Heatmap / Stats -->
+<div class="md:col-span-2 md:row-span-1 glass-card rounded-xl p-md flex flex-col relative">
+<h3 class="font-label-md text-label-md text-on-surface-variant flex items-center gap-xs mb-md">
+<span class="material-symbols-outlined text-[16px] text-inverse-primary">insights</span>
+                    30-Day Activity Matrix
+                </h3>
+<div class="flex-1 flex items-end justify-between gap-1 w-full mt-auto">
+<!-- Synthesized bar chart -->
+<script>
+                        for(let i=0; i<30; i++) {
+                            const height = Math.floor(Math.random() * 80) + 10;
+                            const isActive = i > 25 ? 'bg-inverse-primary shadow-[0_0_8px_rgba(73,75,214,0.5)]' : 'bg-surface-bright hover:bg-primary/50';
+                            document.write(`<div class="w-full rounded-t-sm ${isActive} transition-all duration-300 cursor-pointer" style="height: ${height}%" title="Day ${i+1}"></div>`);
+                        }
+                    </script>
+</div>
+</div>
+<!-- Questions Contributed -->
+<div class="md:col-span-1 md:row-span-1 glass-card rounded-xl p-md flex flex-col justify-between">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs mb-xs">
+<span class="material-symbols-outlined text-[14px] text-tertiary">library_add</span>
+                    Contributed
+                </h3>
+<div>
+<span class="font-headline-lg text-headline-lg text-on-surface">34</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">Database additions</p>
+</div>
+</div>
+<!-- Most Active Subject -->
+<div class="md:col-span-1 md:row-span-1 glass-card rounded-xl p-md flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -right-4 -bottom-4 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[100px]">science</span>
+</div>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs mb-xs">
+<span class="material-symbols-outlined text-[14px]">psychology</span>
+                    Primary Focus
+                </h3>
+<div class="z-10 mt-auto">
+<span class="font-headline-md text-headline-md text-on-surface truncate block">Quantum Mech</span>
+<p class="font-label-sm text-label-sm text-secondary mt-1">142 hrs logged</p>
+</div>
+</div>
+</div>
+<!-- Mission Goals Section -->
+<section class="glass-card rounded-2xl p-lg flex flex-col gap-md rim-light">
+<div class="flex items-center justify-between mb-sm">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined text-[24px]">rocket</span>
+                    Current Objectives
+                </h2>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<!-- Goal 1 -->
+<div class="bg-surface-container/50 rounded-lg p-md border border-white/5 flex flex-col gap-sm">
+<div class="flex justify-between items-center">
+<h4 class="font-label-md text-label-md text-on-surface">Solve 50 Physics Questions</h4>
+<span class="font-label-sm text-label-sm text-secondary">38 / 50</span>
+</div>
+<!-- Glow track progress bar -->
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[76%] rounded-full shadow-[0_0_10px_rgba(79,219,200,0.6)] relative overflow-hidden">
+<div class="absolute top-0 right-0 bottom-0 w-10 bg-gradient-to-r from-transparent to-white/30"></div>
+</div>
+</div>
+</div>
+<!-- Goal 2 -->
+<div class="bg-surface-container/50 rounded-lg p-md border border-white/5 flex flex-col gap-sm">
+<div class="flex justify-between items-center">
+<h4 class="font-label-md text-label-md text-on-surface">Maintain 7-Day Streak</h4>
+<span class="font-label-sm text-label-sm text-tertiary">Day 5</span>
+</div>
+<div class="flex gap-1">
+<div class="h-2 flex-1 bg-tertiary rounded-sm shadow-[0_0_8px_rgba(255,185,95,0.4)]"></div>
+<div class="h-2 flex-1 bg-tertiary rounded-sm shadow-[0_0_8px_rgba(255,185,95,0.4)]"></div>
+<div class="h-2 flex-1 bg-tertiary rounded-sm shadow-[0_0_8px_rgba(255,185,95,0.4)]"></div>
+<div class="h-2 flex-1 bg-tertiary rounded-sm shadow-[0_0_8px_rgba(255,185,95,0.4)]"></div>
+<div class="h-2 flex-1 bg-tertiary rounded-sm shadow-[0_0_8px_rgba(255,185,95,0.4)]"></div>
+<div class="h-2 flex-1 bg-surface-container-highest rounded-sm"></div>
+<div class="h-2 flex-1 bg-surface-container-highest rounded-sm"></div>
+</div>
+</div>
+</section>
+<!-- System Controls -->
+<section class="flex flex-col md:flex-row gap-md mt-sm">
+<button class="flex-1 glass-card p-md rounded-xl flex items-center justify-center gap-sm text-on-surface hover:bg-surface-container-high transition-colors border border-outline-variant/30">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">System Preferences</span>
+</button>
+<button class="flex-1 glass-card p-md rounded-xl flex items-center justify-center gap-sm text-error hover:bg-error/10 transition-colors border border-error/20">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Disconnect</span>
+</button>
+</section>
+</main>
+<!-- Bottom Navigation Bar (Mobile) - Semantic Shell Mandate Followed -->
+<!-- Suppressed on desktop, active navigation logically determined (Profile implies an Account/Home state, but since it's a destination, we map to Home or a generic state if no exact match. Given options: Home, Vault, Central DB, Leaderboard. A User Profile typically sits off Home or Leaderboard. We will default to none active as 'Profile' is not in the array, OR map it to Home as the primary hub.) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-40 flex justify-around items-center px-margin-mobile pb-safe pt-2 bg-surface-container/80 backdrop-blur-xl border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.4)] rounded-t-xl" style="padding-bottom: max(env(safe-area-inset-bottom), 16px);">
+<!-- Home (Active as fallback intent for Profile/Dashboard) -->
+<a class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-full px-4 py-1 shadow-[0_0_12px_rgba(192,193,255,0.2)] translate-y-[-2px] transition-all duration-300" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<!-- Vault -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm">Vault</span>
+</a>
+<!-- Central DB -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">database</span>
+<span class="font-label-sm text-label-sm">Central DB</span>
+</a>
+<!-- Leaderboard -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">leaderboard</span>
+<span class="font-label-sm text-label-sm">Leaderboard</span>
+</a>
+</nav>
+</body></html>

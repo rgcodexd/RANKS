@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RANKS Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#2d3449",
+                        "surface-container-high": "#222a3d",
+                        "surface-container-lowest": "#060e20",
+                        "tertiary": "#ffb95f",
+                        "outline-variant": "#464554",
+                        "inverse-primary": "#494bd6",
+                        "on-secondary": "#003731",
+                        "background": "#0b1326",
+                        "surface-container": "#171f33",
+                        "secondary-fixed-dim": "#4fdbc8",
+                        "surface-dim": "#0b1326",
+                        "secondary-container": "#04b4a2",
+                        "primary-container": "#8083ff",
+                        "outline": "#908fa0",
+                        "on-error": "#690005",
+                        "on-tertiary-container": "#3e2400",
+                        "on-background": "#dae2fd",
+                        "on-primary-fixed": "#07006c",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "primary": "#c0c1ff",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#ca8100",
+                        "surface-tint": "#c0c1ff",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-tertiary": "#472a00",
+                        "primary-fixed": "#e1e0ff",
+                        "surface-container-highest": "#2d3449",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "inverse-surface": "#dae2fd",
+                        "error": "#ffb4ab",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#00201c",
+                        "secondary-fixed": "#71f8e4",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-primary-container": "#0d0096",
+                        "secondary": "#4fdbc8",
+                        "inverse-on-surface": "#283044",
+                        "surface": "#0b1326",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-secondary-fixed-variant": "#005048",
+                        "on-surface": "#dae2fd",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-primary": "#1000a9",
+                        "surface-bright": "#31394d",
+                        "on-secondary-container": "#003f38",
+                        "surface-container-low": "#131b2e"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        "margin-tablet": "40px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "margin-mobile": "20px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "xl": "32px",
+                        "base": "4px"
+                    },
+                    fontFamily: {
+                        "display-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    fontSize: {
+                        "display-lg-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "800" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "headline-md": ["20px", { lineHeight: "28px", fontWeight: "700" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "display-lg": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "800" }],
+                        "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+                        "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }],
+                        "headline-lg": ["24px", { lineHeight: "32px", fontWeight: "700" }]
+                    }
+                }
+            }
+        };
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        .glass-card {
+            background-color: rgba(23, 31, 51, 0.8); /* surface-container */
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(192, 193, 255, 0.1);
+        }
+        .glow-effect {
+            box-shadow: 0 0 12px rgba(192, 193, 255, 0.2);
+        }
+        .rim-light {
+            border-top: 1px solid linear-gradient(to right, rgba(255,255,255,0.2), transparent);
+        }
+        /* Custom scrollbar for horizontal scroll */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pt-[72px] pb-[80px]">
+<!-- TopAppBar (from JSON) -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile py-sm bg-surface/80 dark:bg-surface/80 backdrop-blur-md border-b border-white/20 shadow-[0_0_12px_rgba(192,193,255,0.2)]">
+<div class="flex items-center gap-md">
+<button class="text-primary dark:text-primary hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+</button>
+<h1 class="font-display-lg-mobile text-display-lg-mobile bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent uppercase tracking-tighter">RANKS</h1>
+</div>
+<button class="w-[32px] h-[32px] rounded-full overflow-hidden hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A stylized, low-poly 3D avatar of a futuristic space commander character with a neon purple and orange spacesuit, set against a dark starry background. The aesthetic is modern, playful, and high-tech." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqSuFdmBprpjgqS-kCWsHZNxgmyuYUEctXCmthpYgHgUdwn3bgUOTsZ-dKXYWAoIh7206mCBDfbxaAYocVmhQx40jBJGh3mf6F1ySgN5blXfNjoRHk2LducOZ2vsEOyd_cp4I1K6pFK4w9gGbOWcPePI_re3zeKaDi6W-gIYGKp1fQN_V7rexkYKKXzJTJ4tbHtehC_ge4PElEKoUbasOjfyOPAx6K2eKBIkUtfPfGC-Bt_jCSosBXnQ"/>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow px-margin-mobile py-lg flex flex-col gap-lg max-w-[800px] mx-auto w-full">
+<!-- Stellar HUD -->
+<section class="flex flex-col gap-sm">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Welcome back, Commander</h2>
+<div class="flex gap-md">
+<div class="flex items-center gap-sm bg-surface-container-high px-md py-sm rounded-full border border-white/10 glow-effect">
+<span class="material-symbols-outlined text-tertiary">local_fire_department</span>
+<span class="font-label-md text-label-md text-on-surface">Streak: 15 Days</span>
+</div>
+<div class="flex items-center gap-sm bg-surface-container-high px-md py-sm rounded-full border border-white/10">
+<span class="material-symbols-outlined text-primary">military_tech</span>
+<span class="font-label-md text-label-md text-on-surface">Rank #42</span>
+</div>
+</div>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Daily Goal Ring -->
+<div class="glass-card rounded-xl p-lg flex flex-col items-center justify-center relative min-h-[200px]">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-sm w-full text-left">Daily Mission</h3>
+<div class="relative w-[120px] h-[120px]">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<!-- Background ring -->
+<circle class="text-surface-variant" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<!-- Progress ring (75%) -->
+<circle class="text-tertiary transition-all duration-1000 ease-out glow-effect" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="62.8" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface leading-none">15</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">/20 Solved</span>
+</div>
+</div>
+</div>
+<!-- Continue Practice -->
+<div class="glass-card rounded-xl p-lg flex flex-col justify-between relative overflow-hidden group hover:glow-effect transition-all duration-300">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-colors"></div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-sm">Next Protocol</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md">Quantum Mechanics: Wave Functions</p>
+<div class="inline-flex px-sm py-xs rounded-full bg-primary/10 border border-primary/20 text-primary font-label-sm text-label-sm">
+                        Physics
+                    </div>
+</div>
+<button class="mt-md w-full py-sm rounded-lg bg-gradient-to-r from-primary-container to-inverse-primary text-on-primary-container font-label-md text-label-md flex items-center justify-center gap-sm hover:opacity-90 transition-opacity">
+                    Initiate Sequence <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Recent Captures Horizontal Scroll -->
+<section class="flex flex-col gap-sm">
+<div class="flex justify-between items-end">
+<h3 class="font-headline-md text-headline-md text-on-surface">Recent Captures</h3>
+<button class="font-label-sm text-label-sm text-primary hover:underline">View Vault</button>
+</div>
+<div class="flex gap-md overflow-x-auto hide-scrollbar pb-sm -mx-margin-mobile px-margin-mobile">
+<!-- Capture Item 1 -->
+<div class="min-w-[200px] glass-card rounded-lg p-md flex flex-col gap-sm flex-shrink-0 cursor-pointer hover:-translate-y-1 transition-transform duration-200 hover:glow-effect">
+<div class="w-full h-[100px] rounded-md overflow-hidden bg-surface-variant relative">
+<img alt="Equation Capture" class="w-full h-full object-cover opacity-70" data-alt="A stylized, abstract representation of a complex mathematical equation floating in a dark cosmic space, illuminated by soft blue and purple neon lights, hinting at advanced technology and learning." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWftsjoiD9YG07dDWtsJNQc2PT_R3vlQ41Wf5_HZ2i-jo0KsWAFoADtZA729liFVmCVATCfUgyBFgriEHMZAxPo7v3CZi6aur4-diwAoqiBv6Ycs1p7W9aiEWKYFFW5Ag2f7FeAvomcx-y6hFqgTsj_7-qYPFZxIwbab_2kcvFe1MjfFDFexXpeUsdeuwFm2S0QZhQM_Vo9oJae0Nle8GhcysbZvLpGqpdbmmhI5MoyJKXk3a0jDTmMA"/>
+<div class="absolute bottom-2 right-2 bg-surface-container/80 backdrop-blur-sm rounded px-2 py-1 flex items-center">
+<span class="material-symbols-outlined text-[14px] text-tertiary">check_circle</span>
+</div>
+</div>
+<p class="font-label-md text-label-md text-on-surface truncate">Calculus Definite Integrals</p>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 hours ago</span>
+</div>
+<!-- Capture Item 2 -->
+<div class="min-w-[200px] glass-card rounded-lg p-md flex flex-col gap-sm flex-shrink-0 cursor-pointer hover:-translate-y-1 transition-transform duration-200 hover:glow-effect">
+<div class="w-full h-[100px] rounded-md overflow-hidden bg-surface-variant relative">
+<img alt="Chemistry Capture" class="w-full h-full object-cover opacity-70" data-alt="A macro shot of a complex organic chemistry molecular structure diagram glowing with a faint orange light against a deep navy blue background, conveying a high-tech academic environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACz2uNDKLyAxX3xyqzoqKmWsL-3ITkGQW46UqcBjueo11UTmEUWWglG-9HrOfkIHKoA1q0pEBTObsCraVmHGMdn5VXMJaj59jxgBD7O6ONV9-7ZuwyYAtIb-LvvqPRRTKMsvbvaH6lPx3vT91ycPDAu_o0FnE1V3FsVG7IZEQBFMabGQnI0DhzI5qSqslsNLjX5JUZxDleiFTMJFMLDIGLIg5kTZQdnBKmUly0dlBRVGd97-aoBEfKaQ"/>
+<div class="absolute bottom-2 right-2 bg-surface-container/80 backdrop-blur-sm rounded px-2 py-1 flex items-center">
+<span class="material-symbols-outlined text-[14px] text-surface-variant">hourglass_empty</span>
+</div>
+</div>
+<p class="font-label-md text-label-md text-on-surface truncate">Organic Synthesis</p>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Yesterday</span>
+</div>
+</div>
+</section>
+<!-- FAB Spacer -->
+<div class="h-16"></div>
+</main>
+<!-- Prominent FAB (Contextual to Home - Launch Camera) -->
+<button class="fixed bottom-[96px] right-margin-mobile z-40 w-14 h-14 bg-gradient-to-tr from-tertiary to-tertiary-container rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,185,95,0.4)] hover:scale-105 active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined text-on-tertiary-container text-[28px]" style="font-variation-settings: 'FILL' 1;">camera</span>
+</button>
+<!-- BottomNavBar (from JSON) -->
+<nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-center px-margin-mobile pb-safe pt-2 bg-surface-container/80 dark:bg-surface-container/80 backdrop-blur-xl border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.4)] rounded-t-xl md:hidden">
+<!-- Active Tab: Home -->
+<button class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-full px-4 py-1 shadow-[0_0_12px_rgba(192,193,255,0.2)] translate-y-[-2px] transition-all duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm mt-xs">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm mt-xs">Vault</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">database</span>
+<span class="font-label-sm text-label-sm mt-xs">Central DB</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-label-sm text-label-sm mt-xs">Leaderboard</span>
+</button>
+</nav>
+<script>
+        // Micro-interaction for capture cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

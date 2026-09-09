@@ -2,6 +2,7 @@ package com.edtech.ranks.ui.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -11,14 +12,21 @@ import com.edtech.ranks.ui.auth.AuthScreen
 import com.edtech.ranks.ui.camera.CameraScreen
 import com.edtech.ranks.ui.home.HomeScreen
 import com.edtech.ranks.ui.practice.PracticeScreen
-import com.edtech.ranks.ui.profile.ProfileSetupScreen
+import com.edtech.ranks.ui.profile.ProfileScreen
 import com.edtech.ranks.ui.vault.VaultScreen
 import com.edtech.ranks.ui.central.CentralScreen
 import com.edtech.ranks.ui.leaderboard.LeaderboardScreen
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.getValue
+import androidx.navigation.compose.currentBackStackEntryAsState
+
 sealed class Screen(val route: String) {
     object Auth : Screen("auth")
-    object ProfileSetup : Screen("profile_setup")
+    object Profile : Screen("profile")
     object Home : Screen("home")
     object Camera : Screen("camera")
     object Practice : Screen("practice")
@@ -27,31 +35,13 @@ sealed class Screen(val route: String) {
     object Leaderboard : Screen("leaderboard")
 }
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.edtech.ranks.ui.theme.*
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation(
     isAuthenticated: Boolean,
     onAuthSuccess: () -> Unit
 ) {
     val navController = rememberNavController()
-    val startDestination = if (isAuthenticated) Screen.ProfileSetup.route else Screen.Auth.route
+    val startDestination = if (isAuthenticated) Screen.Home.route else Screen.Auth.route
     
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -65,14 +55,9 @@ fun AppNavigation(
     )
 
     Scaffold(
-        topBar = {
-            if (showBottomNav) {
-                StellarTopAppBar()
-            }
-        },
         bottomBar = {
             if (showBottomNav) {
-                CosmicBottomNav(
+                AppBottomNav(
                     currentRoute = currentRoute,
                     onNavigate = { route ->
                         navController.navigate(route) {
@@ -88,50 +73,38 @@ fun AppNavigation(
             if (showBottomNav) {
                 FloatingActionButton(
                     onClick = { navController.navigate(Screen.Camera.route) },
-                    containerColor = Color.Transparent,
-                    elevation = FloatingActionButtonDefaults.elevation(0.dp),
-                    modifier = Modifier
-                        .offset(y = 24.dp) // Hover above the nav bar
-                        .size(64.dp)
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    shape = CircleShape
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.topRightToBottomLeft(listOf(tertiary, tertiaryContainer)),
-                                CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = "Capture", tint = onTertiaryContainer, modifier = Modifier.size(32.dp))
-                    }
+                    Icon(Icons.Default.DocumentScanner, contentDescription = "Scan Question")
                 }
             }
         },
-        floatingActionButtonPosition = FabPosition.End
+        floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding).fillMaxSize()
         ) {
-            // ... (keep auth and profile) ...
             composable(Screen.Auth.route) {
                 AuthScreen(
                     serverClientId = "847821044733-cvalj83derag50vvlt37ekjkg9o2k0v0.apps.googleusercontent.com",
                     onAuthSuccess = {
                         onAuthSuccess()
-                        navController.navigate(Screen.ProfileSetup.route) {
+                        navController.navigate(Screen.Home.route) {
                             popUpTo(Screen.Auth.route) { inclusive = true }
                         }
                     }
                 )
             }
-            composable(Screen.ProfileSetup.route) {
-                ProfileSetupScreen(
-                    onSetupComplete = {
-                        navController.navigate(Screen.Home.route) {
-                            popUpTo(Screen.ProfileSetup.route) { inclusive = true }
+            composable(Screen.Profile.route) {
+                ProfileScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onSignOut = {
+                        navController.navigate(Screen.Auth.route) {
+                            popUpTo(0) { inclusive = true }
                         }
                     }
                 )
@@ -175,94 +148,36 @@ fun AppNavigation(
 }
 
 @Composable
-fun StellarTopAppBar() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(GlassBackground)
-            .padding(horizontal = 20.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Send, contentDescription = "Logo", tint = primary)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "RANKS",
-                style = MaterialTheme.typography.displayMedium,
-                color = primary
-            )
-        }
-        Box(
-            modifier = Modifier
-                .size(32.dp)
-                .clip(CircleShape)
-                .background(surfaceVariant)
-        )
-    }
-}
-
-@Composable
-fun CosmicBottomNav(
+fun AppBottomNav(
     currentRoute: String?,
     onNavigate: (String) -> Unit
 ) {
     NavigationBar(
-        containerColor = GlassBackground,
-        tonalElevation = 0.dp,
-        modifier = Modifier.background(GlassBackground)
+        containerColor = MaterialTheme.colorScheme.surface,
     ) {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
             label = { Text("Home") },
             selected = currentRoute == Screen.Home.route,
-            onClick = { onNavigate(Screen.Home.route) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = primary,
-                selectedTextColor = primary,
-                indicatorColor = primary.copy(alpha = 0.2f),
-                unselectedIconColor = onSurfaceVariant,
-                unselectedTextColor = onSurfaceVariant
-            )
+            onClick = { onNavigate(Screen.Home.route) }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Star, contentDescription = "Vault") },
+            icon = { Icon(Icons.Default.Bookmark, contentDescription = "Vault") },
             label = { Text("Vault") },
             selected = currentRoute == Screen.Vault.route,
-            onClick = { onNavigate(Screen.Vault.route) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = primary,
-                selectedTextColor = primary,
-                indicatorColor = primary.copy(alpha = 0.2f),
-                unselectedIconColor = onSurfaceVariant,
-                unselectedTextColor = onSurfaceVariant
-            )
+            onClick = { onNavigate(Screen.Vault.route) }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Search, contentDescription = "Central") },
-            label = { Text("Central") },
+            icon = { Icon(Icons.Default.History, contentDescription = "Central") },
+            label = { Text("History") },
             selected = currentRoute == Screen.Central.route,
-            onClick = { onNavigate(Screen.Central.route) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = primary,
-                selectedTextColor = primary,
-                indicatorColor = primary.copy(alpha = 0.2f),
-                unselectedIconColor = onSurfaceVariant,
-                unselectedTextColor = onSurfaceVariant
-            )
+            onClick = { onNavigate(Screen.Central.route) }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Person, contentDescription = "Leaderboard") },
+            icon = { Icon(Icons.Default.Leaderboard, contentDescription = "Rank") },
             label = { Text("Rank") },
             selected = currentRoute == Screen.Leaderboard.route,
-            onClick = { onNavigate(Screen.Leaderboard.route) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = primary,
-                selectedTextColor = primary,
-                indicatorColor = primary.copy(alpha = 0.2f),
-                unselectedIconColor = onSurfaceVariant,
-                unselectedTextColor = onSurfaceVariant
-            )
+            onClick = { onNavigate(Screen.Leaderboard.route) }
         )
     }
 }

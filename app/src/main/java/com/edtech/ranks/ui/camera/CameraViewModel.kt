@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.edtech.ranks.domain.parser.QuestionSegmentationEngine
+import com.edtech.ranks.domain.parser.models.ParsedPage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,8 +23,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import androidx.camera.core.ImageCaptureException
 import android.net.Uri
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerialName
+
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.gotrue.auth
 import com.edtech.ranks.data.remote.supabase
@@ -33,6 +34,9 @@ class CameraViewModel : ViewModel() {
 
     private val _extractedText = MutableStateFlow("")
     val extractedText: StateFlow<String> = _extractedText.asStateFlow()
+
+    private val _parsedPage = MutableStateFlow<ParsedPage?>(null)
+    val parsedPage: StateFlow<ParsedPage?> = _parsedPage.asStateFlow()
 
     private val _isVerifying = MutableStateFlow(false)
     val isVerifying: StateFlow<Boolean> = _isVerifying.asStateFlow()
@@ -78,6 +82,8 @@ class CameraViewModel : ViewModel() {
         recognizer.process(image)
             .addOnSuccessListener { visionText ->
                 _extractedText.value = visionText.text
+                val page = QuestionSegmentationEngine.parsePage("scan_${System.currentTimeMillis()}", 1, visionText)
+                _parsedPage.value = page
                 _isVerifying.value = true
             }
             .addOnFailureListener { e ->
@@ -89,9 +95,14 @@ class CameraViewModel : ViewModel() {
         _capturedImages.value = emptyList()
     }
 
+    fun removeImage(uri: String) {
+        _capturedImages.value = _capturedImages.value.filter { it.uri != uri }
+    }
+
     fun dismissVerification() {
         _isVerifying.value = false
         _extractedText.value = ""
+        _parsedPage.value = null
     }
 
     fun saveQuestion(
@@ -102,6 +113,7 @@ class CameraViewModel : ViewModel() {
         subject: String, 
         chapter: String, 
         topic: String,
+        imageUri: String? = null,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -117,6 +129,7 @@ class CameraViewModel : ViewModel() {
                     subject = subject,
                     chapter = chapter,
                     topic = topic,
+                    image_url = imageUri,
                     difficulty = 1
                 )
                 
@@ -125,6 +138,7 @@ class CameraViewModel : ViewModel() {
                 
                 _isVerifying.value = false
                 _extractedText.value = ""
+                _parsedPage.value = null
                 onSuccess()
             } catch (e: Exception) {
                 e.printStackTrace()

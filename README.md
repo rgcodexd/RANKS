@@ -1,6 +1,6 @@
 # Project Anti-Gravity 🚀
 
-Project Anti-Gravity (RANKS) is an ambitious Android app built in Kotlin to help students prepare for exams using their existing books and study material. The core idea is simple but powerful: a student can capture a question photo, the app extracts the text and options, shows a review popup for confirmation, and saves the question into a central database or private vault for future practice.
+RANKS is an ambitious Android app built in Kotlin to help students prepare for exams using their existing books and study material. The core idea is simple but powerful: a student can capture a question photo, the app extracts the text and options, shows a review popup for confirmation, and saves the question into a central database or private vault for future practice.
 
 This project is designed to grow into a premium EdTech platform with AI-powered question understanding, personalized practice, adaptive difficulty, global leaderboards, and analytics-driven learning.
 

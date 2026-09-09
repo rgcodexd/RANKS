@@ -2,35 +2,43 @@ package com.edtech.ranks.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val background = Color(0xFF0B1326)
-val onBackground = Color(0xFFDAE2FD)
+// Brand Colors
+val BrandBluePrimary = Color(0xFF1A73E8)
+val BrandBlueOnPrimary = Color(0xFFFFFFFF)
+val BrandBluePrimaryContainer = Color(0xFFD2E3FC)
+val BrandBlueOnPrimaryContainer = Color(0xFF174EA6)
 
-val surface = Color(0xFF0B1326)
-val onSurface = Color(0xFFDAE2FD)
-val surfaceVariant = Color(0xFF2D3449)
-val onSurfaceVariant = Color(0xFFC7C4D7)
+val BrandSecondary = Color(0xFFE8710A)
+val BrandOnSecondary = Color(0xFFFFFFFF)
+val BrandSecondaryContainer = Color(0xFFFCE8E6)
+val BrandOnSecondaryContainer = Color(0xFFC5221F)
 
-val primary = Color(0xFFC0C1FF)
-val onPrimary = Color(0xFF1000A9)
-val primaryContainer = Color(0xFF8083FF)
-val onPrimaryContainer = Color(0xFF0D0096)
+val BrandTertiary = Color(0xFF188038)
+val BrandOnTertiary = Color(0xFFFFFFFF)
+val BrandTertiaryContainer = Color(0xFFCEEAD6)
+val BrandOnTertiaryContainer = Color(0xFF0D652D)
 
-val secondary = Color(0xFF4FDBC8)
-val onSecondary = Color(0xFF003731)
-val secondaryContainer = Color(0xFF04B4A2)
-val onSecondaryContainer = Color(0xFF003F38)
+val ErrorRed = Color(0xFFD93025)
+val OnErrorRed = Color(0xFFFFFFFF)
+val ErrorRedContainer = Color(0xFFFCE8E6)
+val OnErrorRedContainer = Color(0xFFB31412)
 
-val tertiary = Color(0xFFFFB95F)
-val onTertiary = Color(0xFF472A00)
-val tertiaryContainer = Color(0xFFCA8100)
-val onTertiaryContainer = Color(0xFF3E2400)
+// Light Theme Colors
+val LightBackground = Color(0xFFF8F9FA) // Slightly off-white for main bg to let white cards pop
+val LightOnBackground = Color(0xFF202124)
+val LightSurface = Color(0xFFFFFFFF)
+val LightOnSurface = Color(0xFF202124)
+val LightSurfaceVariant = Color(0xFFF1F3F4)
+val LightOnSurfaceVariant = Color(0xFF5F6368)
+val LightOutline = Color(0xFFDADCE0)
+val LightOutlineVariant = Color(0xFFE8EAED)
 
-val error = Color(0xFFFFB4AB)
-val onError = Color(0xFF690005)
-val errorContainer = Color(0xFF93000A)
-val onErrorContainer = Color(0xFFFFDAD6)
-
-// Glassmorphism effect base colors
-val GlassBackground = Color(0xCC171F33) // rgba(23, 31, 51, 0.8) for surface-container
-val GlassBorder = Color(0x1AC0C1FF) // rgba(192, 193, 255, 0.1)
-val GlowColor = Color(0x33C0C1FF) // rgba(192, 193, 255, 0.2)
+// Dark Theme Colors
+val DarkBackground = Color(0xFF121212)
+val DarkOnBackground = Color(0xFFE8EAED)
+val DarkSurface = Color(0xFF1E1E1E)
+val DarkOnSurface = Color(0xFFE8EAED)
+val DarkSurfaceVariant = Color(0xFF292A2D) 
+val DarkOnSurfaceVariant = Color(0xFF9AA0A6)
+val DarkOutline = Color(0xFF5F6368)
+val DarkOutlineVariant = Color(0xFF3C4043)

@@ -15,7 +15,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edtech.ranks.data.remote.supabase
-import com.edtech.ranks.ui.theme.PrimaryBlue
+import com.edtech.ranks.ui.components.GlassCard
+import com.edtech.ranks.ui.theme.*
 import com.edtech.ranks.ui.vault.VaultQuestion
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -90,7 +91,7 @@ fun CentralScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(background)
             .padding(16.dp)
     ) {
         // Header
@@ -99,13 +100,14 @@ fun CentralScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onNavigateBack) {
-                Text("<", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = PrimaryBlue)
+                Text("<", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = primary)
             }
             Text(
                 text = "Central Database",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.weight(1f),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                color = onSurface
             )
             Spacer(modifier = Modifier.width(48.dp))
         }
@@ -124,7 +126,7 @@ fun CentralScreen(
         when (centralState) {
             is CentralState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = PrimaryBlue)
+                    CircularProgressIndicator(color = primary)
                 }
             }
             is CentralState.Error -> {
@@ -153,24 +155,22 @@ fun CentralScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(questions) { question ->
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                            GlassCard(
+                                modifier = Modifier.fillMaxWidth()
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Text(
                                         text = question.questionText,
                                         style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
+                                        color = onSurface
                                     )
                                     if (!question.answer.isNullOrBlank()) {
                                         Spacer(modifier = Modifier.height(8.dp))
                                         Text(
                                             text = "A: ${question.answer}",
                                             style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.primary
+                                            color = primary
                                         )
                                     }
                                     Spacer(modifier = Modifier.height(8.dp))
@@ -181,12 +181,12 @@ fun CentralScreen(
                                         Text(
                                             text = "${question.subject} • ${question.exam}",
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                            color = onSurfaceVariant
                                         )
                                         Text(
                                             text = question.created_at.take(10),
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                            color = onSurfaceVariant
                                         )
                                     }
                                 }

@@ -1,34 +1,27 @@
 package com.edtech.ranks.ui.home
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.edtech.ranks.ui.components.GlassCard
-import com.edtech.ranks.ui.components.glowEffect
-import com.edtech.ranks.ui.theme.*
+import coil.compose.AsyncImage
 
 @Composable
 fun HomeScreen(
@@ -42,223 +35,238 @@ fun HomeScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(background)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 24.dp)
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        // Stellar HUD
-        Text(
-            text = "Welcome back, Commander",
-            style = MaterialTheme.typography.headlineLarge,
-            color = onSurface
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            HudBadge(
-                icon = "🔥", // Using emoji as placeholder for local_fire_department
-                text = "Streak: 15 Days",
-                iconColor = tertiary
-            )
-            HudBadge(
-                icon = "🏅", // Using emoji for military_tech
-                text = "Rank #42",
-                iconColor = primary
-            )
-        }
+        // Top App Bar
+        HomeTopBar()
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Bento Grid Layout
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Daily Mission Ring
-            GlassCard(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(220.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp).fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Daily Mission",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = onSurface,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    DailyMissionRing(progress = 0.75f, current = 15, total = 20)
-                }
-            }
-
-            // Continue Practice
-            GlassCard(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(220.dp)
-                    .glowEffect(color = primary.copy(alpha = 0.1f), radius = 20.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp).fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column {
-                        Text(text = "Next Protocol", style = MaterialTheme.typography.headlineMedium, color = onSurface)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "Quantum Mechanics", style = MaterialTheme.typography.bodyMedium, color = onSurfaceVariant)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Box(
-                            modifier = Modifier
-                                .background(primary.copy(alpha = 0.1f), CircleShape)
-                                .border(1.dp, primary.copy(alpha = 0.2f), CircleShape)
-                                .padding(horizontal = 12.dp, vertical = 4.dp)
-                        ) {
-                            Text("Physics", style = MaterialTheme.typography.labelSmall, color = primary)
-                        }
-                    }
-                    Button(
-                        onClick = onCustomTestClick,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        contentPadding = PaddingValues(0.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Brush.horizontalGradient(listOf(primaryContainer, primary)), RoundedCornerShape(8.dp))
-                                .padding(vertical = 12.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Initiate Sequence", style = MaterialTheme.typography.labelMedium, color = onPrimaryContainer)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(Icons.Default.ArrowForward, contentDescription = null, tint = onPrimaryContainer, modifier = Modifier.size(18.dp))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Recent Captures Horizontal Scroll
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            Text(text = "Recent Captures", style = MaterialTheme.typography.headlineMedium, color = onSurface)
-            Text(
-                text = "View Vault",
-                style = MaterialTheme.typography.labelSmall,
-                color = primary,
-                modifier = Modifier.clickable { onVaultClick() }
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
-            RecentCaptureCard(title = "Calculus Definite Integrals", time = "2 hours ago", status = "done")
-            RecentCaptureCard(title = "Organic Synthesis", time = "Yesterday", status = "pending")
-        }
+            // User Greeting & Stats
+            UserHeader(onLeaderboardClick = onLeaderboardClick)
 
-        Spacer(modifier = Modifier.height(100.dp)) // FAB spacer
-    }
-}
+            Spacer(modifier = Modifier.height(24.dp))
 
-@Composable
-fun HudBadge(icon: String, text: String, iconColor: Color) {
-    Row(
-        modifier = Modifier
-            .background(surfaceVariant, CircleShape)
-            .border(1.dp, Color.White.copy(alpha = 0.1f), CircleShape)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = icon, fontSize = 16.sp) // Fallback for Material Symbols
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = text, style = MaterialTheme.typography.labelMedium, color = onSurface)
-    }
-}
+            // Subjects Grid
+            Text(
+                text = "Subjects",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            SubjectsGrid()
 
-@Composable
-fun DailyMissionRing(progress: Float, current: Int, total: Int) {
-    var animationPlayed by remember { mutableStateOf(false) }
-    val currentProgress by animateFloatAsState(
-        targetValue = if (animationPlayed) progress else 0f,
-        animationSpec = tween(durationMillis = 1000, delayMillis = 300)
-    )
+            Spacer(modifier = Modifier.height(32.dp))
 
-    LaunchedEffect(key1 = true) {
-        animationPlayed = true
-    }
-
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(100.dp)) {
-        CircularProgressIndicator(
-            progress = { 1f },
-            modifier = Modifier.fillMaxSize(),
-            color = surfaceVariant,
-            strokeWidth = 8.dp,
-        )
-        CircularProgressIndicator(
-            progress = { currentProgress },
-            modifier = Modifier.fillMaxSize(),
-            color = tertiary,
-            strokeWidth = 8.dp,
-            strokeCap = StrokeCap.Round
-        )
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = current.toString(), style = MaterialTheme.typography.displayMedium, color = onSurface)
-            Text(text = "/$total Solved", style = MaterialTheme.typography.labelSmall, color = onSurfaceVariant)
-        }
-    }
-}
-
-@Composable
-fun RecentCaptureCard(title: String, time: String, status: String) {
-    GlassCard(
-        modifier = Modifier
-            .width(200.dp)
-            .clickable { }
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(surfaceVariant)
+            // Practice Section
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Image placeholder
-                Box(modifier = Modifier.fillMaxSize().background(primary.copy(alpha = 0.1f)))
-                
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(8.dp)
-                        .background(GlassBackground, RoundedCornerShape(4.dp))
-                        .padding(4.dp)
-                ) {
-                    if (status == "done") {
-                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = tertiary, modifier = Modifier.size(16.dp))
-                    } else {
-                        Icon(Icons.Default.Warning, contentDescription = null, tint = onSurfaceVariant, modifier = Modifier.size(16.dp))
-                    }
-                }
+                Text(
+                    text = "Continue Practice",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
             }
             Spacer(modifier = Modifier.height(12.dp))
-            Text(text = title, style = MaterialTheme.typography.labelMedium, color = onSurface, maxLines = 1)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = time, style = MaterialTheme.typography.labelSmall, color = onSurfaceVariant)
+            PracticeCard(onPracticeClick = onCustomTestClick)
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Quick Access
+            Text(
+                text = "Quick Access",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                QuickAccessCard(
+                    title = "Bookmarks",
+                    icon = Icons.Default.BookmarkBorder,
+                    onClick = onVaultClick,
+                    modifier = Modifier.weight(1f)
+                )
+                QuickAccessCard(
+                    title = "Recent Errors",
+                    icon = Icons.Default.ErrorOutline,
+                    onClick = onCentralClick,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(100.dp)) // Bottom padding for navigation bar
+        }
+    }
+}
+
+@Composable
+private fun HomeTopBar() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Default.School, contentDescription = "App Logo", tint = MaterialTheme.colorScheme.primary)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "RANKS",
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+        
+        // Gamification - Coins
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Default.MonetizationOn, contentDescription = "Coins", tint = Color(0xFFFFC107), modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = "450", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+    }
+}
+
+@Composable
+private fun UserHeader(onLeaderboardClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AsyncImage(
+            model = "https://lh3.googleusercontent.com/aida-public/AB6AXuAqSuFdmBprpjgqS-kCWsHZNxgmyuYUEctXCmthpYgHgUdwn3bgUOTsZ-dKXYWAoIh7206mCBDfbxaAYocVmhQx40jBJGh3mf6F1ySgN5blXfNjoRHk2LducOZ2vsEOyd_cp4I1K6pFK4w9gGbOWcPePI_re3zeKaDi6W-gIYGKp1fQN_V7rexkYKKXzJTJ4tbHtehC_ge4PElEKoUbasOjfyOPAx6K2eKBIkUtfPfGC-Bt_jCSosBXnQ",
+            contentDescription = "User Profile",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(56.dp)
+                .clip(CircleShape)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = "Hello, Student", style = MaterialTheme.typography.headlineSmall)
+            Text(text = "JEE Main Target 2025", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        
+        IconButton(onClick = onLeaderboardClick) {
+            Icon(Icons.Default.EmojiEvents, contentDescription = "Leaderboard", tint = MaterialTheme.colorScheme.primary)
+        }
+    }
+}
+
+@Composable
+private fun SubjectsGrid() {
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            SubjectCard(title = "Physics", icon = Icons.Default.Science, progress = 0.4f, modifier = Modifier.weight(1f))
+            SubjectCard(title = "Chemistry", icon = Icons.Default.Biotech, progress = 0.6f, modifier = Modifier.weight(1f))
+        }
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            SubjectCard(title = "Mathematics", icon = Icons.Default.Functions, progress = 0.3f, modifier = Modifier.weight(1f))
+            SubjectCard(title = "Mock Tests", icon = Icons.Default.Quiz, progress = 0f, modifier = Modifier.weight(1f), isSpecial = true)
+        }
+    }
+}
+
+@Composable
+private fun SubjectCard(title: String, icon: ImageVector, progress: Float, modifier: Modifier = Modifier, isSpecial: Boolean = false) {
+    ElevatedCard(
+        modifier = modifier.height(110.dp),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = if (isSpecial) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Icon(
+                imageVector = icon, 
+                contentDescription = title, 
+                tint = if (isSpecial) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.primary
+            )
+            Column {
+                Text(
+                    text = title, 
+                    style = MaterialTheme.typography.titleMedium,
+                    color = if (isSpecial) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                )
+                if (!isSpecial) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LinearProgressIndicator(
+                        progress = progress, 
+                        modifier = Modifier.fillMaxWidth().height(4.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PracticeCard(onPracticeClick: () -> Unit) {
+    OutlinedCard(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(text = "Thermodynamics", style = MaterialTheme.typography.titleMedium)
+                    Text(text = "Physics • 15 Qs Left", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                CircularProgressIndicator(progress = 0.65f, modifier = Modifier.size(40.dp))
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onPracticeClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Resume Practice")
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuickAccessCard(title: String, icon: ImageVector, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    ElevatedCard(
+        modifier = modifier.clickable { onClick() }
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(imageVector = icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = title, style = MaterialTheme.typography.labelLarge)
         }
     }
 }

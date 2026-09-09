@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.edtech.ranks.ui.theme.PrimaryBlue
+
 
 @Composable
 fun PracticeScreen(
@@ -46,7 +46,7 @@ fun PracticeScreen(
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-                Button(onClick = onNavigateBack, colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)) {
+                Button(onClick = onNavigateBack, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)) {
                     Text("Go Back Home")
                 }
             }
@@ -65,7 +65,7 @@ fun PracticeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = onNavigateBack) {
-                        Text("<", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = PrimaryBlue)
+                        Text("<", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     }
                     Text(
                         text = "Custom Test",
@@ -83,7 +83,7 @@ fun PracticeScreen(
                         .fillMaxWidth()
                         .height(8.dp)
                         .padding(bottom = 32.dp),
-                    color = PrimaryBlue,
+                    color = MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.surface
                 )
 
@@ -131,7 +131,7 @@ fun PracticeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Text("Show Answer")
                     }
@@ -149,7 +149,7 @@ fun PracticeScreen(
                             viewModel.submitAnswerQuality(0)
                             showAnswer = false
                         }
-                        RatingButton(text = "Good (3)", color = com.edtech.ranks.ui.theme.PrimaryBlueVariant) {
+                        RatingButton(text = "Good (3)", color = MaterialTheme.colorScheme.primaryContainer) {
                             viewModel.submitAnswerQuality(3)
                             showAnswer = false
                         }

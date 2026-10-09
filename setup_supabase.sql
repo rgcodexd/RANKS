@@ -93,6 +93,28 @@ DROP POLICY IF EXISTS "Authenticated users can upload images" ON storage.objects
 CREATE POLICY "Authenticated users can upload images" ON storage.objects
     FOR INSERT WITH CHECK (bucket_id = 'question_images' AND auth.role() = 'authenticated');
 
+-- 3.a. Storage Bucket for Private Vault
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('private_vault', 'private_vault', false)
+ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Users can access their own private vault" ON storage.objects;
+CREATE POLICY "Users can access their own private vault" ON storage.objects
+    FOR ALL USING (bucket_id = 'private_vault' AND auth.role() = 'authenticated');
+
+-- 3.b. Storage Bucket for Central Vault
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('central_vault', 'central_vault', true)
+ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Anyone can read central vault" ON storage.objects;
+CREATE POLICY "Anyone can read central vault" ON storage.objects
+    FOR SELECT USING (bucket_id = 'central_vault');
+
+DROP POLICY IF EXISTS "Authenticated users can upload to central vault" ON storage.objects;
+CREATE POLICY "Authenticated users can upload to central vault" ON storage.objects
+    FOR INSERT WITH CHECK (bucket_id = 'central_vault' AND auth.role() = 'authenticated');
+
 -- 4. Solved Events Table (Tracking for Top Scholars Leaderboard)
 CREATE TABLE IF NOT EXISTS public.solved_events (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

@@ -5,18 +5,22 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edtech.ranks.data.remote.supabase
-import com.edtech.ranks.ui.components.GlassCard
-import com.edtech.ranks.ui.theme.*
+import com.edtech.ranks.ui.components.Level1Card
+import com.edtech.ranks.ui.components.StatusChip
 import com.edtech.ranks.ui.vault.VaultQuestion
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -91,103 +95,121 @@ fun CentralScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(background)
-            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // Header
         Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onNavigateBack) {
-                Text("<", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = primary)
+                Icon(Icons.Default.Close, contentDescription = "Close", tint = MaterialTheme.colorScheme.primary)
             }
             Text(
-                text = "Central Database",
-                style = MaterialTheme.typography.headlineLarge,
+                text = "Central Hive",
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                color = onSurface
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.width(48.dp))
         }
 
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { viewModel.updateSearchQuery(it) },
-            label = { Text("Search Questions") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
+        Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { viewModel.updateSearchQuery(it) },
+                placeholder = { Text("Search community questions...") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.primary) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary
+                ),
+                shape = RoundedCornerShape(percent = 50)
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Content
-        when (centralState) {
-            is CentralState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = primary)
+            // Content
+            when (centralState) {
+                is CentralState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
                 }
-            }
-            is CentralState.Error -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = (centralState as CentralState.Error).message,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                        Button(onClick = { viewModel.fetchPublicQuestions(searchQuery) }) {
-                            Text("Retry")
+                is CentralState.Error -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = (centralState as CentralState.Error).message,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                            Button(onClick = { viewModel.fetchPublicQuestions(searchQuery) }) {
+                                Text("Retry")
+                            }
                         }
                     }
                 }
-            }
-            is CentralState.Success -> {
-                val questions = (centralState as CentralState.Success).questions
-                if (questions.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("No questions found in central database.")
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(questions) { question ->
-                            GlassCard(
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Text(
-                                        text = question.questionText,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = onSurface
-                                    )
-                                    if (!question.answer.isNullOrBlank()) {
-                                        Spacer(modifier = Modifier.height(8.dp))
+                is CentralState.Success -> {
+                    val questions = (centralState as CentralState.Success).questions
+                    if (questions.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("No questions found.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            contentPadding = PaddingValues(bottom = 100.dp)
+                        ) {
+                            items(questions) { question ->
+                                Level1Card(
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Column(modifier = Modifier.padding(16.dp)) {
                                         Text(
-                                            text = "A: ${question.answer}",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = primary
+                                            text = question.questionText,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
-                                    }
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(
-                                            text = "${question.subject} • ${question.exam}",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = onSurfaceVariant
-                                        )
-                                        Text(
-                                            text = question.created_at.take(10),
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = onSurfaceVariant
-                                        )
+                                        if (!question.answer.isNullOrBlank()) {
+                                            Spacer(modifier = Modifier.height(12.dp))
+                                            Text(
+                                                text = "A: ${question.answer}",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                                if (question.subject.isNotBlank()) {
+                                                    StatusChip(text = question.subject, color = MaterialTheme.colorScheme.tertiary)
+                                                }
+                                                if (question.exam.isNotBlank()) {
+                                                    StatusChip(text = question.exam, color = MaterialTheme.colorScheme.secondary)
+                                                }
+                                            }
+                                            Text(
+                                                text = question.created_at.take(10),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
                                     }
                                 }
                             }

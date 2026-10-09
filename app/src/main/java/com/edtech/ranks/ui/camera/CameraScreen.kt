@@ -125,40 +125,16 @@ fun CameraScreen(
                 }
             )
 
-            // Animated Scanline overlay
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp)
-                    .align(Alignment.TopCenter)
-                    // We draw the scanline manually based on height percentage
-                    .drawBehind {
-                        val yPos = size.height * 15f * scanlineY
-                        drawRect(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, secondary.copy(alpha = 0.3f), Color.Transparent),
-                                startY = yPos,
-                                endY = yPos + 60.dp.toPx()
-                            )
-                        )
-                    }
-            )
-
-            // Viewfinder Reticle Overlay
+            // Viewfinder overlay
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 40.dp, vertical = 120.dp),
+                    .padding(horizontal = 24.dp),
                 contentAlignment = Alignment.Center
             ) {
-                // Crosshair
-                Box(modifier = Modifier.size(32.dp)) {
-                    Box(modifier = Modifier.align(Alignment.Center).fillMaxWidth().height(1.dp).background(secondary.copy(alpha = 0.5f)))
-                    Box(modifier = Modifier.align(Alignment.Center).fillMaxHeight().width(1.dp).background(secondary.copy(alpha = 0.5f)))
-                }
-                
-                // Corners
-                CanvasCorners()
+                com.edtech.ranks.ui.components.ScannerViewfinder(
+                    isScanning = isVerifying || (viewModel.parsedPage.collectAsState().value != null)
+                )
             }
 
             // Top Bar
@@ -309,17 +285,18 @@ fun CameraScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     // Pulsing Ring
-                    androidx.compose.ui.graphics.drawscope.DrawScope
+                    val pulsingColor = primary.copy(alpha = pulseAlpha)
+                    val staticRingColor = primary.copy(alpha = 0.3f)
                     Box(
                         modifier = Modifier
                             .size(72.dp)
                             .drawBehind {
                                 drawCircle(
-                                    color = primary.copy(alpha = pulseAlpha),
+                                    color = pulsingColor,
                                     radius = size.width / 2 * pulseScale
                                 )
                                 drawCircle(
-                                    color = primary.copy(alpha = 0.3f),
+                                    color = staticRingColor,
                                     radius = size.width / 2 * 1.2f,
                                     style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2f)
                                 )
@@ -423,10 +400,10 @@ fun CameraScreen(
 
 @Composable
 fun CanvasCorners() {
+    val color = secondary
     androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
         val cornerLength = 40.dp.toPx()
         val strokeWidth = 3.dp.toPx()
-        val color = secondary
         
         // Top Left
         drawLine(color, Offset(0f, 0f), Offset(cornerLength, 0f), strokeWidth)

@@ -6,6 +6,15 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
+import java.util.Properties
+import java.io.FileInputStream
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
 android {
     namespace = "com.edtech.ranks"
     compileSdk = 34
@@ -21,6 +30,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField(
+            "String",
+            "GEMINI_API_KEY",
+            "\"${localProperties.getProperty("GEMINI_API_KEY", "")}\""
+        )
     }
 
     buildTypes {
@@ -41,6 +56,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {
@@ -60,6 +76,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.8")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.navigation:navigation-compose:2.7.7")
@@ -103,4 +120,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // Generative AI (Gemini)
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 }

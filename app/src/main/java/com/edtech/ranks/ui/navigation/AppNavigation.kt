@@ -23,6 +23,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.getValue
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 
 sealed class Screen(val route: String) {
     object Auth : Screen("auth")
@@ -147,37 +154,90 @@ fun AppNavigation(
     }
 }
 
+
+
 @Composable
 fun AppBottomNav(
     currentRoute: String?,
     onNavigate: (String) -> Unit
 ) {
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface,
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(bottom = 8.dp) // extra padding from screen bottom
     ) {
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") },
-            selected = currentRoute == Screen.Home.route,
-            onClick = { onNavigate(Screen.Home.route) }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(32.dp))
+                // Frosted glass effect approx: semi-transparent surface
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
+                .padding(horizontal = 8.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            NavItem(
+                icon = Icons.Default.Home,
+                label = "Home",
+                selected = currentRoute == Screen.Home.route,
+                onClick = { onNavigate(Screen.Home.route) },
+                modifier = Modifier.weight(1f)
+            )
+            NavItem(
+                icon = Icons.Default.Bookmark,
+                label = "Vault",
+                selected = currentRoute == Screen.Vault.route,
+                onClick = { onNavigate(Screen.Vault.route) },
+                modifier = Modifier.weight(1f).padding(end = 24.dp) // Make room for FAB
+            )
+            // FAB space in center
+            NavItem(
+                icon = Icons.Default.History,
+                label = "History",
+                selected = currentRoute == Screen.Central.route,
+                onClick = { onNavigate(Screen.Central.route) },
+                modifier = Modifier.weight(1f).padding(start = 24.dp) // Make room for FAB
+            )
+            NavItem(
+                icon = Icons.Default.Leaderboard,
+                label = "Rank",
+                selected = currentRoute == Screen.Leaderboard.route,
+                onClick = { onNavigate(Screen.Leaderboard.route) },
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun NavItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+    Column(
+        modifier = modifier.clickable(
+            interactionSource = interactionSource,
+            indication = null,
+            onClick = onClick
+        ),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = color
         )
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Bookmark, contentDescription = "Vault") },
-            label = { Text("Vault") },
-            selected = currentRoute == Screen.Vault.route,
-            onClick = { onNavigate(Screen.Vault.route) }
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.History, contentDescription = "Central") },
-            label = { Text("History") },
-            selected = currentRoute == Screen.Central.route,
-            onClick = { onNavigate(Screen.Central.route) }
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Leaderboard, contentDescription = "Rank") },
-            label = { Text("Rank") },
-            selected = currentRoute == Screen.Leaderboard.route,
-            onClick = { onNavigate(Screen.Leaderboard.route) }
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = color,
+            modifier = Modifier.padding(top = 4.dp)
         )
     }
 }

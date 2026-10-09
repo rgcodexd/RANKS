@@ -28,9 +28,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.edtech.ranks.data.remote.supabase
-import com.edtech.ranks.ui.components.GlassCard
+import com.edtech.ranks.ui.components.Level1Card
+import com.edtech.ranks.ui.components.Level2Card
 import com.edtech.ranks.ui.components.glowEffect
-import com.edtech.ranks.ui.theme.*
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -133,7 +133,7 @@ fun LeaderboardScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(background)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
@@ -145,13 +145,13 @@ fun LeaderboardScreen(
             Text(
                 text = "Global Leaderboard",
                 style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.ExtraBold),
-                color = onSurface
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "See where you stand in the cosmic ranks.",
                 style = MaterialTheme.typography.bodyLarge,
-                color = onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -161,8 +161,7 @@ fun LeaderboardScreen(
                 // Toggle
                 Row(
                     modifier = Modifier
-                        .background(surfaceContainer, RoundedCornerShape(8.dp))
-                        .border(1.dp, Color.White.copy(alpha = 0.05f), RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp))
                         .padding(4.dp)
                         .fillMaxWidth()
                 ) {
@@ -170,23 +169,23 @@ fun LeaderboardScreen(
                         modifier = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(6.dp))
-                            .background(if (selectedTab == 0) primaryContainer else Color.Transparent)
+                            .background(if (selectedTab == 0) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
                             .clickable { viewModel.setTab(0) }
                             .padding(vertical = 8.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Scholars", color = if (selectedTab == 0) onPrimaryContainer else onSurfaceVariant, fontWeight = FontWeight.SemiBold)
+                        Text("Scholars", color = if (selectedTab == 0) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.SemiBold)
                     }
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(6.dp))
-                            .background(if (selectedTab == 1) primaryContainer else Color.Transparent)
+                            .background(if (selectedTab == 1) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
                             .clickable { viewModel.setTab(1) }
                             .padding(vertical = 8.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Contributors", color = if (selectedTab == 1) onPrimaryContainer else onSurfaceVariant, fontWeight = FontWeight.SemiBold)
+                        Text("Contributors", color = if (selectedTab == 1) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.SemiBold)
                     }
                 }
 
@@ -194,15 +193,15 @@ fun LeaderboardScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(surfaceContainer, RoundedCornerShape(8.dp))
-                        .border(1.dp, outlineVariant, RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(8.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(8.dp))
                         .padding(horizontal = 16.dp, vertical = 12.dp)
                 ) {
-                    Text(selectedExam, color = onSurface, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                    Text(selectedExam, color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                     Icon(
                         Icons.Default.ExpandMore,
                         contentDescription = null,
-                        tint = onSurfaceVariant,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.align(Alignment.CenterEnd).size(18.dp)
                     )
                 }
@@ -214,12 +213,12 @@ fun LeaderboardScreen(
             when (state) {
                 is LeaderboardState.Loading -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = primary)
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
                 }
                 is LeaderboardState.Error -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text((state as LeaderboardState.Error).message, color = error)
+                        Text((state as LeaderboardState.Error).message, color = MaterialTheme.colorScheme.error)
                     }
                 }
                 is LeaderboardState.Success -> {
@@ -242,19 +241,18 @@ fun LeaderboardScreen(
                         if (rest.isNotEmpty()) {
                             item {
                                 // List Header
-                                GlassCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)) {
+                                Level1Card(modifier = Modifier.fillMaxWidth()) {
                                     Column {
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .background(surfaceContainerHigh.copy(alpha = 0.5f))
-                                                .border(1.dp, Color.White.copy(alpha = 0.05f))
+                                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                                                 .padding(horizontal = 24.dp, vertical = 16.dp),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            Text("Rank", modifier = Modifier.width(64.dp), color = onSurfaceVariant, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                                            Text("Scholar", modifier = Modifier.weight(1f), color = onSurfaceVariant, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                                            Text("Points", modifier = Modifier.width(80.dp), color = onSurfaceVariant, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
+                                            Text("Rank", modifier = Modifier.width(64.dp), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                                            Text("Scholar", modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                                            Text("Points", modifier = Modifier.width(80.dp), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
                                         }
 
                                         // List Items
@@ -262,13 +260,13 @@ fun LeaderboardScreen(
                                             Row(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
-                                                    .border(1.dp, Color.White.copy(alpha = 0.05f))
+                                                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                                                     .padding(horizontal = 24.dp, vertical = 16.dp),
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Text((index + 4).toString(), modifier = Modifier.width(64.dp), color = onSurfaceVariant, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                                                Text((index + 4).toString(), modifier = Modifier.width(64.dp), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                                                 Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                                                    Box(modifier = Modifier.size(40.dp).background(surfaceBright, CircleShape).clip(CircleShape)) {
+                                                    Box(modifier = Modifier.size(40.dp).background(MaterialTheme.colorScheme.surfaceBright, CircleShape).clip(CircleShape)) {
                                                         // Fallback avatar
                                                         AsyncImage(
                                                             model = "https://lh3.googleusercontent.com/aida-public/AB6AXuDVjNbi5j6UcUe95dscgrnLf3b0e_WcpdN-MtC29SfL3laFtdx51bvfs4xADwxNMgP6O0atL9jgTKlrGq2uoSgbig7ZkZe-GvOZve6876DmrV9RxnJwHbzzAS9ARwcqqTRkadwJ54I8KgpfuTkTyMGGk6mn8c4CMbA67zOnGZMaGP6E4Xe99dbbViJgDYSUFgJhlcXPEtcaXBkyDm9KvGbz1y3Ngu2HtAZmJzkZukfoNC847DcmMnNetw",
@@ -278,9 +276,9 @@ fun LeaderboardScreen(
                                                         )
                                                     }
                                                     Spacer(modifier = Modifier.width(16.dp))
-                                                    Text(entry.full_name, color = onSurface, fontSize = 16.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
+                                                    Text(entry.full_name, color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
                                                 }
-                                                Text("%,d".format(entry.count), modifier = Modifier.width(80.dp), color = primary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
+                                                Text("%,d".format(entry.count), modifier = Modifier.width(80.dp), color = MaterialTheme.colorScheme.primary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
                                             }
                                         }
                                     }
@@ -300,20 +298,17 @@ fun LeaderboardScreen(
                 .padding(16.dp)
                 .padding(bottom = 80.dp) // above bottom nav
         ) {
-            GlassCard(
-                modifier = Modifier.fillMaxWidth().glowEffect(Color.Black.copy(alpha = 0.5f), 30.dp),
-                shape = RoundedCornerShape(16.dp),
-                borderColor = primary.copy(alpha = 0.3f),
-                backgroundColor = surfaceContainerHighest.copy(alpha = 0.9f)
+            Level2Card(
+                modifier = Modifier.fillMaxWidth().glowEffect(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), 30.dp),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("42", color = tertiary, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.width(48.dp))
+                    Text("42", color = MaterialTheme.colorScheme.tertiary, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.width(48.dp))
                     
                     Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                        Box(modifier = Modifier.size(40.dp).border(2.dp, primary, CircleShape).clip(CircleShape)) {
+                        Box(modifier = Modifier.size(40.dp).border(2.dp, MaterialTheme.colorScheme.primary, CircleShape).clip(CircleShape)) {
                             AsyncImage(
                                 model = "https://lh3.googleusercontent.com/aida-public/AB6AXuD0py3QLqiKBIneY32tk55brixNx0f4v1hVHoGIh8w0jDAN5m3wC66gvKHMo0JXbfcDmbHfp6AM7hA2rRI5Wzh5M5iXKmw8L9zP7uf3rtARrY6pygF3Na1MFd9vCnMJfIrTeW1V0HbUAMdDUea9Y5COwSnnX5OG4axnZwXyVjGujwNhruMBSiE11k88DSIiyd0_IDTGwkJ2L_F4a6fZBWU18ZMascF6Sxslc0MYjmOpkgAr6dZSORsRhQ",
                                 contentDescription = null,
@@ -323,16 +318,16 @@ fun LeaderboardScreen(
                         }
                         Spacer(modifier = Modifier.width(16.dp))
                         Column {
-                            Text("You (Commander)", color = onSurface, fontSize = 16.sp)
-                            Text("Top 15%", color = onSurfaceVariant, fontSize = 12.sp)
+                            Text("You (Commander)", color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp)
+                            Text("Top 15%", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                         }
                     }
 
                     Column(horizontalAlignment = Alignment.End) {
-                        Text("4,500 pts", color = primary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                        Text("4,500 pts", color = MaterialTheme.colorScheme.primary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.ArrowUpward, contentDescription = null, tint = secondary, modifier = Modifier.size(14.dp))
-                            Text("12 positions", color = secondary, fontSize = 12.sp)
+                            Icon(Icons.Default.ArrowUpward, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(14.dp))
+                            Text("12 positions", color = MaterialTheme.colorScheme.secondary, fontSize = 12.sp)
                         }
                     }
                 }
@@ -350,21 +345,21 @@ fun PodiumView(top3: List<LeaderboardEntry>) {
         PodiumCard(
             rank = 1,
             entry = top3[0],
-            glowColor = tertiary,
+            glowColor = MaterialTheme.colorScheme.tertiary,
             avatarUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuD91Nt6u6K1t6bK276hsD_SahhKAp_cOXqvxBn5PogcGMGQ95mIucdAsukXMIlM5PZLFd2mBrtMRtR0piaJvadE5B4QgJ9Dc1JbEFJ2YwHmLWIUVTeryGnWKMYvqFAOPuEhZnyMCdvKsFqbJFGSES1bMNCUz79CuZ9bvAwiJT7x8YhfglMXzImiVjQlQg_5KvetEqwOcCOk9FY5sC7yTG6E2m9Nvh_E2tUDuc_vLPWRmppMUZ5qh3qwug"
         )
         // Silver (2nd)
         PodiumCard(
             rank = 2,
             entry = top3[1],
-            glowColor = onSurfaceVariant,
+            glowColor = MaterialTheme.colorScheme.onSurfaceVariant,
             avatarUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuDY5skXG6RTdCjgQFagHi54iJ8J78gGnAwwo06qfvv6CxtYG7CXfENgmDDZ0Mgz4mGIWjMD5Pu_do0j5ijQOc9YvRlj0RCkkxkJLGfdb6nXtgqbazF7XNRykEUbg_fIVrwv8OUQSIkLdhsvr8g6ciqVCSOPZuh3wmfEICrUAl61Bkj86iXRmzRriKZhD5MlXHdleg48VArzIBG7PhkDenbZEaqazvORwtuhvh6U1Iu7N7p9osAQq_2LfA"
         )
         // Bronze (3rd)
         PodiumCard(
             rank = 3,
             entry = top3[2],
-            glowColor = tertiaryContainer,
+            glowColor = MaterialTheme.colorScheme.tertiaryContainer,
             avatarUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuDKfk3_Y9CDr7TjXllnAW9MZXCXhGfPGyh717jrH16IWpQ7DbatYGa1PRdQ5M3ET1lp8ogYxf2cGKuBQNIpbmnUDL2hPpuaeKS2vaW6cL_tSbVvcIyWg6oFukYzHQ8CRo59o4YgTCw6UgNEAf6aDZafvzdpwyeP4NGp-1hLmKHfzHttIAixOv_yUb0Rp7mvg46oWnM_VUTv1g5EuQVJJt_DnQop-cZbZVGUi-QBYwfxTmAUk1zE6j4KpQ"
         )
     }
@@ -373,7 +368,7 @@ fun PodiumView(top3: List<LeaderboardEntry>) {
 @Composable
 fun PodiumCard(rank: Int, entry: LeaderboardEntry, glowColor: Color, avatarUrl: String) {
     Box(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
-        GlassCard(
+        Level1Card(
             modifier = Modifier.fillMaxWidth().glowEffect(glowColor.copy(alpha = 0.2f), 20.dp),
             shape = RoundedCornerShape(12.dp)
         ) {
@@ -399,22 +394,22 @@ fun PodiumCard(rank: Int, entry: LeaderboardEntry, glowColor: Color, avatarUrl: 
                     text = entry.full_name,
                     style = if (rank == 1) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = if (rank == 1) tertiary else onSurface
+                    color = if (rank == 1) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "%,d pts".format(entry.count),
                     style = MaterialTheme.typography.labelMedium,
-                    color = if (rank == 1) onSurfaceVariant else tertiary
+                    color = if (rank == 1) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.tertiary
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Box(
                     modifier = Modifier
-                        .background(if (rank == 1) tertiary.copy(alpha = 0.1f) else primary.copy(alpha = 0.1f), RoundedCornerShape(16.dp))
-                        .border(1.dp, if (rank == 1) tertiary.copy(alpha = 0.2f) else Color.Transparent, RoundedCornerShape(16.dp))
+                        .background(if (rank == 1) MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), RoundedCornerShape(16.dp))
+                        .border(1.dp, if (rank == 1) MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f) else Color.Transparent, RoundedCornerShape(16.dp))
                         .padding(horizontal = 12.dp, vertical = 4.dp)
                 ) {
-                    Text(entry.exam, color = if (rank == 1) tertiary else primary, fontSize = 12.sp)
+                    Text(entry.exam, color = if (rank == 1) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary, fontSize = 12.sp)
                 }
             }
         }
@@ -426,13 +421,13 @@ fun PodiumCard(rank: Int, entry: LeaderboardEntry, glowColor: Color, avatarUrl: 
                 .offset(y = (-16).dp)
                 .size(if (rank == 1) 40.dp else 32.dp)
                 .background(glowColor, CircleShape)
-                .border(2.dp, surfaceContainer, CircleShape)
+                .border(2.dp, MaterialTheme.colorScheme.surfaceContainer, CircleShape)
                 .glowEffect(glowColor.copy(alpha = 0.5f), 15.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = rank.toString(),
-                color = if (rank == 1) onTertiaryContainer else onSurface,
+                color = if (rank == 1) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 fontSize = if (rank == 1) 20.sp else 16.sp
             )

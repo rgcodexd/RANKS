@@ -9,6 +9,7 @@ data class QuestionEntity(
     val id: Int = 0,
     val supabaseId: String,
     val questionText: String,
+    val exam: String = "Unknown",
     val subject: String,
     val topic: String,
     val difficulty: Int,

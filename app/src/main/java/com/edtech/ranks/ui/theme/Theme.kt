@@ -16,32 +16,64 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryBlue,
-    secondary = SecondaryAccent,
-    background = DarkBackground,
-    surface = DarkSurface,
-    onPrimary = LightText,
-    onSecondary = LightText,
-    onBackground = LightText,
-    onSurface = LightText
+    primary = Primary,
+    onPrimary = OnPrimary,
+    primaryContainer = PrimaryContainer,
+    onPrimaryContainer = OnPrimaryContainer,
+    secondary = Secondary,
+    onSecondary = OnSecondary,
+    secondaryContainer = SecondaryContainer,
+    onSecondaryContainer = OnSecondaryContainer,
+    tertiary = Tertiary,
+    onTertiary = OnTertiary,
+    tertiaryContainer = TertiaryContainer,
+    onTertiaryContainer = OnTertiaryContainer,
+    error = ErrorColor,
+    onError = OnErrorColor,
+    errorContainer = ErrorContainer,
+    onErrorContainer = OnErrorContainer,
+    background = Surface, // Using light colors for now as requested by Kinetic Neo-Academic (mostly light mode first)
+    onBackground = OnSurface,
+    surface = Surface,
+    onSurface = OnSurface,
+    surfaceVariant = SurfaceContainerHighest,
+    onSurfaceVariant = OnSurfaceVariant,
+    outline = Outline,
+    outlineVariant = OutlineVariant
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = PrimaryBlueVariant,
-    secondary = SecondaryAccent,
-    background = androidx.compose.ui.graphics.Color.White,
-    surface = androidx.compose.ui.graphics.Color(0xFFF5F5F5),
-    onPrimary = androidx.compose.ui.graphics.Color.White,
-    onSecondary = androidx.compose.ui.graphics.Color.White,
-    onBackground = DarkText,
-    onSurface = DarkText
+    primary = Primary,
+    onPrimary = OnPrimary,
+    primaryContainer = PrimaryContainer,
+    onPrimaryContainer = OnPrimaryContainer,
+    secondary = Secondary,
+    onSecondary = OnSecondary,
+    secondaryContainer = SecondaryContainer,
+    onSecondaryContainer = OnSecondaryContainer,
+    tertiary = Tertiary,
+    onTertiary = OnTertiary,
+    tertiaryContainer = TertiaryContainer,
+    onTertiaryContainer = OnTertiaryContainer,
+    error = ErrorColor,
+    onError = OnErrorColor,
+    errorContainer = ErrorContainer,
+    onErrorContainer = OnErrorContainer,
+    background = Surface,
+    onBackground = OnSurface,
+    surface = Surface,
+    onSurface = OnSurface,
+    surfaceVariant = SurfaceContainerHighest,
+    onSurfaceVariant = OnSurfaceVariant,
+    outline = Outline,
+    outlineVariant = OutlineVariant
 )
 
 @Composable
-fun RANKSTheme(
+fun RanksTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // Turning off dynamic color to maintain brand consistency
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -49,10 +81,10 @@ fun RANKSTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-    
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {

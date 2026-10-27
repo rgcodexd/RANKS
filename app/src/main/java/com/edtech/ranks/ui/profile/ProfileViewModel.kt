@@ -97,4 +97,15 @@ class ProfileViewModel : ViewModel() {
             }
         }
     }
+    fun signOut(onComplete: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                supabase.auth.signOut()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                onComplete()
+            }
+        }
+    }
 }

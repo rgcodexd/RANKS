@@ -12,7 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import com.edtech.ranks.ui.auth.AuthScreen
 import com.edtech.ranks.ui.camera.CameraScreen
-import com.edtech.ranks.ui.theme.RANKSTheme
+import com.edtech.ranks.ui.theme.RanksTheme
 import com.edtech.ranks.ui.navigation.AppNavigation
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         supabase.handleDeeplinks(intent)
         
         setContent {
-            RANKSTheme {
+            RanksTheme {
                 var isAuthenticated by remember { mutableStateOf(false) }
 
                 AppNavigation(

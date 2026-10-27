@@ -3,26 +3,25 @@ package com.edtech.ranks.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.edtech.ranks.ui.theme.PrimaryBlue
-import com.edtech.ranks.ui.theme.PrimaryBlueVariant
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.edtech.ranks.ui.components.Level1Card
+import com.edtech.ranks.ui.components.PrimaryButton
 
 @Composable
 fun HomeScreen(
@@ -30,186 +29,243 @@ fun HomeScreen(
     onCustomTestClick: () -> Unit,
     onVaultClick: () -> Unit,
     onCentralClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onLeaderboardClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp)
-    ) {
-        // Header
-        Text(
-            text = "Welcome to RANKS",
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontWeight = FontWeight.ExtraBold,
-                color = PrimaryBlue
-            )
-        )
-        Text(
-            text = "Your AI Exam Prep Dashboard",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Stats Section (Mocked for now)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            StatCard(
-                title = "Vault",
-                value = "12",
-                subtitle = "Questions",
-                modifier = Modifier.weight(1f)
-            )
-            StatCard(
-                title = "Accuracy",
-                value = "85%",
-                subtitle = "Last 7 Days",
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Text(
-            text = "Quick Actions",
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Action Buttons
-        DashboardActionCard(
-            title = "Add Question to Vault",
-            description = "Snap a photo to extract and save a question",
-            icon = Icons.Default.AddCircle,
-            backgroundColor = PrimaryBlue,
-            contentColor = Color.White,
-            onClick = onAddQuestionClick
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DashboardActionCard(
-            title = "Take Custom Test",
-            description = "Review your saved questions with Spaced Repetition",
-            icon = Icons.Default.Edit,
-            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            onClick = onCustomTestClick
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DashboardActionCard(
-            title = "Question Vault",
-            description = "Browse your saved questions perfectly organized",
-            icon = Icons.Default.Star,
-            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            onClick = onVaultClick
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DashboardActionCard(
-            title = "Central Database",
-            description = "Search and discover public questions",
-            icon = Icons.Default.Search,
-            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            onClick = onCentralClick
-        )
-    }
-}
-
-@Composable
-fun StatCard(
-    title: String,
-    value: String,
-    subtitle: String,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .padding(top = 16.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp)
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            // Micro Header / Welcoming Context
+            MicroHeader(
+                userName = uiState.profile?.full_name ?: "Student",
+                targetExam = uiState.profile?.target_exam ?: "Set Target Exam",
+                onShareClick = {}
             )
-            Spacer(modifier = Modifier.height(8.dp))
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Time Horizon Filter Track
+            TimeFilterTrack()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Hero Stats Bento Grid
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                AccuracyCard(
+                    accuracy = uiState.accuracy,
+                    modifier = Modifier.weight(1f)
+                )
+                QuestionsSolvedCard(
+                    totalSolved = uiState.totalSolved,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Practice Action Area
             Text(
-                text = value,
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                color = PrimaryBlue
+                text = "Active Sprints",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+            Spacer(modifier = Modifier.height(12.dp))
+            ActiveSprintCard(
+                dueQuestions = uiState.dueQuestionsCount,
+                onPracticeClick = onCustomTestClick
             )
+
+            Spacer(modifier = Modifier.height(100.dp)) // Bottom padding for navigation bar
         }
     }
 }
 
 @Composable
-fun DashboardActionCard(
-    title: String,
-    description: String,
-    icon: ImageVector,
-    backgroundColor: Color,
-    contentColor: Color,
-    onClick: () -> Unit
-) {
-    Card(
+private fun MicroHeader(userName: String, targetExam: String, onShareClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = userName,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Surface(
+                    shape = RoundedCornerShape(percent = 50),
+                    color = MaterialTheme.colorScheme.secondaryContainer
+                ) {
+                    Text(
+                        text = "Top 4%",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                }
+            }
+            Text(
+                text = "$targetExam Sprint Cohort",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        
+        IconButton(
+            onClick = onShareClick,
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                .size(40.dp)
+        ) {
+            Icon(Icons.Default.IosShare, contentDescription = "Share Report", tint = MaterialTheme.colorScheme.onSurface)
+        }
+    }
+}
+
+@Composable
+private fun TimeFilterTrack() {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(percent = 50))
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(
+        TimeFilterButton(text = "7 Days", isSelected = true, modifier = Modifier.weight(1f))
+        TimeFilterButton(text = "30 Days", isSelected = false, modifier = Modifier.weight(1f))
+        TimeFilterButton(text = "All Time", isSelected = false, modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun TimeFilterButton(text: String, isSelected: Boolean, modifier: Modifier = Modifier) {
+    val containerColor = if (isSelected) MaterialTheme.colorScheme.surfaceContainerLowest else Color.Transparent
+    val contentColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+    
+    Box(
+        modifier = modifier
+            .background(containerColor, RoundedCornerShape(percent = 50))
+            .padding(vertical = 6.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium,
+            color = contentColor,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+        )
+    }
+}
+
+@Composable
+private fun AccuracyCard(accuracy: Float, modifier: Modifier = Modifier) {
+    Level1Card(modifier = modifier.height(140.dp)) {
+        Column(
             modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = contentColor,
-                modifier = Modifier.size(40.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "ACCURACY", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = contentColor
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = contentColor.copy(alpha = 0.8f)
+                    text = "+5.2%",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(4.dp))
+                        .padding(horizontal = 4.dp, vertical = 2.dp)
                 )
             }
+            
+            Text(
+                text = "${String.format("%.1f", accuracy)}%",
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            
+            Box(modifier = Modifier.fillMaxWidth().height(6.dp).background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(percent = 50))) {
+                Box(modifier = Modifier.fillMaxWidth(accuracy / 100f).fillMaxHeight().background(MaterialTheme.colorScheme.primary, RoundedCornerShape(percent = 50)))
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuestionsSolvedCard(totalSolved: Int, modifier: Modifier = Modifier) {
+    Level1Card(modifier = modifier.height(140.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "QUESTIONS SOLVED", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            
+            Text(
+                text = totalSolved.toString(),
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.LocalFireDepartment, contentDescription = "Streak", tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = "14 Day Streak", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ActiveSprintCard(dueQuestions: Int, onPracticeClick: () -> Unit) {
+    Level1Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(text = "Daily Review Sprint", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+                    Text(text = "Mixed Subjects • $dueQuestions Qs Due", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Box(
+                    modifier = Modifier.size(48.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(progress = 0.3f, color = MaterialTheme.colorScheme.primary, trackColor = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.fillMaxSize())
+                    Text(text = dueQuestions.toString(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            PrimaryButton(
+                text = "Enter Sprint",
+                onClick = onPracticeClick,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

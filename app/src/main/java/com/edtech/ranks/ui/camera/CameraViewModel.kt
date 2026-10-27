@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.edtech.ranks.domain.parser.QuestionSegmentationEngine
+import com.edtech.ranks.domain.parser.models.ParsedPage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,18 +23,28 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import androidx.camera.core.ImageCaptureException
 import android.net.Uri
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerialName
+
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.storage.storage
 import com.edtech.ranks.data.remote.supabase
+import com.edtech.ranks.domain.parser.AiQuestionParser
+import com.edtech.ranks.domain.parser.AiParsedQuestion
+import com.edtech.ranks.BuildConfig
+import com.edtech.ranks.domain.parser.models.ParsedQuestion
+import com.edtech.ranks.domain.parser.models.ParsedOption
+import java.util.UUID
 
 class CameraViewModel : ViewModel() {
 
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    private val aiParser = AiQuestionParser(BuildConfig.GEMINI_API_KEY)
 
     private val _extractedText = MutableStateFlow("")
     val extractedText: StateFlow<String> = _extractedText.asStateFlow()
+
+    private val _parsedPage = MutableStateFlow<ParsedPage?>(null)
+    val parsedPage: StateFlow<ParsedPage?> = _parsedPage.asStateFlow()
 
     private val _isVerifying = MutableStateFlow(false)
     val isVerifying: StateFlow<Boolean> = _isVerifying.asStateFlow()
@@ -78,7 +90,48 @@ class CameraViewModel : ViewModel() {
         recognizer.process(image)
             .addOnSuccessListener { visionText ->
                 _extractedText.value = visionText.text
-                _isVerifying.value = true
+                
+                viewModelScope.launch {
+                    val aiParsed = aiParser.parseQuestionText(visionText.text)
+                    if (aiParsed != null) {
+                        val parsedOptions = aiParsed.options.mapIndexed { idx, opt ->
+                            ParsedOption(
+                                id = UUID.randomUUID().toString(),
+                                label = ('A' + idx).toString(),
+                                normalizedLabel = ('A' + idx).toString(),
+                                labelType = "LETTER_UPPER",
+                                text = opt
+                            )
+                        }
+                        
+                        val q = ParsedQuestion(
+                            id = UUID.randomUUID().toString(),
+                            number = 1,
+                            originalMarker = "Q1",
+                            markerType = "ARABIC",
+                            questionText = aiParsed.questionText,
+                            options = parsedOptions,
+                            optionPattern = "LETTER_UPPER",
+                            confidence = 0.99f,
+                            needsReview = false
+                        )
+                        val header = "${aiParsed.topic} - ${aiParsed.theme}"
+
+                        val page = ParsedPage(
+                            scanId = "scan_${System.currentTimeMillis()}",
+                            pageNumber = 1,
+                            questions = listOf(q),
+                            pageHeader = header
+                        )
+                        _parsedPage.value = page
+                        _isVerifying.value = true
+                    } else {
+                        // Fallback to old segmentation engine if AI fails
+                        val page = QuestionSegmentationEngine.parsePage("scan_${System.currentTimeMillis()}", 1, visionText)
+                        _parsedPage.value = page
+                        _isVerifying.value = true
+                    }
+                }
             }
             .addOnFailureListener { e ->
                 e.printStackTrace()
@@ -89,9 +142,14 @@ class CameraViewModel : ViewModel() {
         _capturedImages.value = emptyList()
     }
 
+    fun removeImage(uri: String) {
+        _capturedImages.value = _capturedImages.value.filter { it.uri != uri }
+    }
+
     fun dismissVerification() {
         _isVerifying.value = false
         _extractedText.value = ""
+        _parsedPage.value = null
     }
 
     fun saveQuestion(
@@ -102,6 +160,7 @@ class CameraViewModel : ViewModel() {
         subject: String, 
         chapter: String, 
         topic: String,
+        imageUri: String? = null,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -117,14 +176,49 @@ class CameraViewModel : ViewModel() {
                     subject = subject,
                     chapter = chapter,
                     topic = topic,
+                    image_url = imageUri,
                     difficulty = 1
                 )
                 
                 // Assuming your table is named "questions"
                 supabase.postgrest["questions"].insert(newQuestion)
+                // Create JSON file for the vaults
+                val aiJson = AiParsedQuestion(
+                    topic = topic,
+                    theme = chapter,
+                    questionText = finalText,
+                    options = emptyList(), // or parse them back from answer if needed
+                    answer = answerText,
+                    unnecessaryData = null
+                )
+                val jsonString = Json.encodeToString(aiJson)
+                val jsonByteArray = jsonString.toByteArray()
                 
+                val filename = "${user?.id ?: "anonymous"}_${System.currentTimeMillis()}.json"
+                
+                // Upload to Private Vault
+                try {
+                    supabase.storage.from("private_vault").upload(
+                        path = "${user?.id}/$filename",
+                        data = jsonByteArray
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                
+                // Upload to Central Vault
+                try {
+                    supabase.storage.from("central_vault").upload(
+                        path = filename,
+                        data = jsonByteArray
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
                 _isVerifying.value = false
                 _extractedText.value = ""
+                _parsedPage.value = null
                 onSuccess()
             } catch (e: Exception) {
                 e.printStackTrace()
